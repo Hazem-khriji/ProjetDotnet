@@ -14,7 +14,7 @@ public class DashboardStatisticsDto
     
     public List<PropertyCountByCity> PropertiesByCity { get; set; }
     public List<PropertyCountByType> PropertiesByType { get; set; }
-    public List<PropertyCountByCategory> PropertiesByCategory { get; set; }
+    //public List<PropertyCountByCategory> PropertiesByCategory { get; set; }
     public List<MonthlyStatistic> MonthlyStats { get; set; }
-    public List<RecentActivity> RecentActivities { get; set; }
+    //public List<RecentActivity> RecentActivities { get; set; }
 }

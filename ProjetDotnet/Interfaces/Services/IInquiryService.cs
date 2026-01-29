@@ -1,7 +1,7 @@
 ﻿namespace ProjetDotnet.Interfaces.Services;
 using ProjetDotnet.DTOs;
 using ProjetDotnet.Enums;
-public class IInquiryService
+public interface IInquiryService
 {
     Task<InquiryDto> GetByIdAsync(int id);
     Task<PagedResultDto<InquiryDto>> GetPagedAsync(

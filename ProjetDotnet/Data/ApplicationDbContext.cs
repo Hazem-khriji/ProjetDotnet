@@ -14,7 +14,7 @@ namespace ProjetDotnet.Data
         public DbSet<Property> Properties { get; set; }
         public DbSet<PropertyImage> PropertyImages { get; set; }
         public DbSet<Inquiry> PropertyRequests { get; set; }
-        public DbSet<PropertyView> PropertyViews { get; set; }
+        //public DbSet<PropertyView> PropertyViews { get; set; }
         public DbSet<Message> Messages { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
@@ -40,14 +40,14 @@ namespace ProjetDotnet.Data
                 entity.Property(e => e.Area)
                     .HasColumnType("decimal(10,2)");
                 
-                entity.HasOne(e => e.User)
+                entity.HasOne(e => e.Owner)
                     .WithMany(u => u.Properties)
                     .HasForeignKey(e => e.Id)
                     .OnDelete(DeleteBehavior.Restrict);
                 
                 entity.HasIndex(e => e.Status);
                 entity.HasIndex(e => e.Type);
-                entity.HasIndex(e => e.CreatedAt);
+                //entity.HasIndex(e => e.CreatedAt);
             });
 
             // PropertyImage Configuration
@@ -66,8 +66,8 @@ namespace ProjetDotnet.Data
                 entity.HasIndex(e => new { e.PropertyId, e.DisplayOrder });
             });
 
-            // PropertyRequest Configuration
-            builder.Entity<PropertyRequest>(entity =>
+            // Inquiry Configuration
+            builder.Entity<Inquiry>(entity =>
             {
                 entity.HasKey(e => e.Id);
                 
@@ -79,12 +79,12 @@ namespace ProjetDotnet.Data
                     .IsRequired();
                 
                 entity.HasOne(e => e.Property)
-                    .WithMany(p => p.Requests)
+                    .WithMany(p => p.Inquiries)
                     .HasForeignKey(e => e.PropertyId)
                     .OnDelete(DeleteBehavior.Cascade);
                 
                 entity.HasOne(e => e.User)
-                    .WithMany(u => u.Requests)
+                    .WithMany(u => u.Inquiries)
                     .HasForeignKey(e => e.UserId)
                     .OnDelete(DeleteBehavior.Restrict);
                 
@@ -125,7 +125,7 @@ namespace ProjetDotnet.Data
             });
 
             // PropertyView Configuration
-            builder.Entity<PropertyView>(entity =>
+            /*builder.Entity<PropertyView>(entity =>
             {
                 entity.HasKey(e => e.Id);
                 
@@ -144,7 +144,7 @@ namespace ProjetDotnet.Data
                     .OnDelete(DeleteBehavior.SetNull);
                 
                 entity.HasIndex(e => e.ViewDate);
-            });
+            });*/
         }
     }
 }

@@ -40,7 +40,7 @@ public class PropertyService : IPropertyService
         };
     }
 
-    public async Task<PropertyDto> CreateAsync(CreatePropertyDto dto, string userId)
+    public async Task<PropertyDto> CreateAsync(CreatePropertyDto dto, ApplicationUser user)
     {
         var property = new Property
         {
@@ -51,9 +51,8 @@ public class PropertyService : IPropertyService
             Status = PropertyStatus.Available,
             Address = dto.Address,
             Area = dto.Area,
-            YearBuilt = dto.YearBuilt,
-            UserId = userId,
-            CreatedAt = DateTime.UtcNow
+            Owner = user,
+            
         };
 
         var created = await _propertyRepository.AddAsync(property);
@@ -73,9 +72,7 @@ public class PropertyService : IPropertyService
         property.Status = dto.Status;
         property.Address = dto.Address;
         property.Area = dto.Area;
-        property.YearBuilt = dto.YearBuilt;
-        property.IsFeatured = dto.IsFeatured;
-        property.UpdatedAt = DateTime.UtcNow;
+        //property.IsFeatured = dto.IsFeatured;
 
         await _propertyRepository.UpdateAsync(property);
         return MapToDto(property);
@@ -91,16 +88,16 @@ public class PropertyService : IPropertyService
         return true;
     }
 
-    public async Task<bool> ToggleFeaturedAsync(int id)
-    {
-        var property = await _propertyRepository.GetByIdAsync(id);
-        if (property == null)
-            return false;
-
-        property.IsFeatured = !property.IsFeatured;
-        await _propertyRepository.UpdateAsync(property);
-        return true;
-    }
+    // public async Task<bool> ToggleFeaturedAsync(int id)
+    // {
+    //     var property = await _propertyRepository.GetByIdAsync(id);
+    //     if (property == null)
+    //         return false;
+    //
+    //     property.IsFeatured = !property.IsFeatured;
+    //     await _propertyRepository.UpdateAsync(property);
+    //     return true;
+    // }
 
     public async Task<bool> UpdateStatusAsync(int id, PropertyStatus status)
     {
@@ -109,16 +106,15 @@ public class PropertyService : IPropertyService
             return false;
 
         property.Status = status;
-        property.UpdatedAt = DateTime.UtcNow;
         await _propertyRepository.UpdateAsync(property);
         return true;
     }
 
-    public async Task<IEnumerable<PropertyDto>> GetFeaturedAsync(int count)
-    {
-        var properties = await _propertyRepository.GetFeaturedAsync(count);
-        return properties.Select(MapToDto);
-    }
+    // public async Task<IEnumerable<PropertyDto>> GetFeaturedAsync(int count)
+    // {
+    //     var properties = await _propertyRepository.GetFeaturedAsync(count);
+    //     return properties.Select(MapToDto);
+    // }
 
     public async Task<int> GetTotalCountAsync()
     {
@@ -137,10 +133,10 @@ public class PropertyService : IPropertyService
             Status = property.Status,
             Address = property.Address,
             Area = property.Area,
-            ViewCount = property.ViewCount,
-            IsFeatured = property.IsFeatured,
-            CreatedAt = property.CreatedAt,
-            OwnerName = property.User != null ? property.User.FullName : "",
+            ViewCount = property.Inquiries.Count,
+            //IsFeatured = property.IsFeatured,
+            //CreatedAt = property.CreatedAt,
+            Owner = property.Owner,
             PrimaryImageUrl = property.Images?.FirstOrDefault(i => i.IsPrimary)?.ImageUrl ?? ""
         };
     }

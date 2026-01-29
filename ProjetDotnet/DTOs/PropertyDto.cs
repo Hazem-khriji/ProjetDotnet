@@ -17,7 +17,7 @@ public class PropertyDto
     public DateTime CreatedAt { get; set; }
     
     
-    public UserDto Owner { get; set; }
+    public ApplicationUser Owner { get; set; }
     public List<PropertyImage> Images { get; set; }
     public string PrimaryImageUrl { get; set; }
 }

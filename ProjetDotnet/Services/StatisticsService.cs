@@ -32,19 +32,19 @@ public class StatisticsService : IStatisticsService
             var pendingRequests = await _context.PropertyRequests
                 .CountAsync(r => r.Status == InquiryStatus.Pending);
 
-            var totalViews = await _context.Properties.SumAsync(p => p.ViewCount);
+            var totalViews = await _context.Properties.SumAsync(p => p.Inquiries.Count);
             var totalValue = await _context.Properties.SumAsync(p => p.Price);
 
-            var propertiesByCity = await _context.Properties
-                .GroupBy(p => p.City)
-                .Select(g => new PropertyCountByCity
-                {
-                    City = g.Key,
-                    Count = g.Count()
-                })
-                .OrderByDescending(x => x.Count)
-                .Take(10)
-                .ToListAsync();
+            // var propertiesByCity = await _context.Properties
+            //     .GroupBy(p => p.City)
+            //     .Select(g => new PropertyCountByCity
+            //     {
+            //         City = g.Key,
+            //         Count = g.Count()
+            //     })
+            //     .OrderByDescending(x => x.Count)
+            //     .Take(10)
+            //     .ToListAsync();
 
             var propertiesByType = await _context.Properties
                 .GroupBy(p => p.Type)
@@ -55,7 +55,7 @@ public class StatisticsService : IStatisticsService
                 })
                 .ToListAsync();
 
-            var monthlyStats = await GetMonthlyStatsAsync();
+            //var monthlyStats = await GetMonthlyStatsAsync();
 
             return new DashboardStatisticsDto
             {
@@ -68,29 +68,29 @@ public class StatisticsService : IStatisticsService
                 PendingRequests = pendingRequests,
                 TotalViews = totalViews,
                 TotalValue = totalValue,
-                PropertiesByCity = propertiesByCity,
+                //PropertiesByCity = propertiesByCity,
                 PropertiesByType = propertiesByType,
-                MonthlyStats = monthlyStats
+                //MonthlyStats = monthlyStats
             };
         }
 
-        private async Task<List<MonthlyStatistic>> GetMonthlyStatsAsync()
-        {
-            var sixMonthsAgo = DateTime.UtcNow.AddMonths(-6);
-            
-            var stats = await _context.Properties
-                .Where(p => p.CreatedAt >= sixMonthsAgo)
-                .GroupBy(p => new { p.CreatedAt.Year, p.CreatedAt.Month })
-                .Select(g => new MonthlyStatistic
-                {
-                    Month = $"{g.Key.Year}-{g.Key.Month:D2}",
-                    PropertiesAdded = g.Count(),
-                    PropertiesSold = g.Count(p => p.Status == PropertyStatus.Sold),
-                    TotalViews = g.Sum(p => p.ViewCount)
-                })
-                .OrderBy(s => s.Month)
-                .ToListAsync();
-
-            return stats;
-        }
+        // private async Task<List<MonthlyStatistic>> GetMonthlyStatsAsync()
+        // {
+        //     var sixMonthsAgo = DateTime.UtcNow.AddMonths(-6);
+        //     
+        //     var stats = await _context.Properties
+        //         .Where(p => p.CreatedAt >= sixMonthsAgo)
+        //         .GroupBy(p => new { p.CreatedAt.Year, p.CreatedAt.Month })
+        //         .Select(g => new MonthlyStatistic
+        //         {
+        //             Month = $"{g.Key.Year}-{g.Key.Month:D2}",
+        //             PropertiesAdded = g.Count(),
+        //             PropertiesSold = g.Count(p => p.Status == PropertyStatus.Sold),
+        //             TotalViews = g.Sum(p => p.ViewCount)
+        //         })
+        //         .OrderBy(s => s.Month)
+        //         .ToListAsync();
+        //
+        //     return stats;
+        // }
     }
