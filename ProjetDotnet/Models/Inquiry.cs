@@ -14,8 +14,6 @@ public class Inquiry
     public DateTime RequestDate { get; set; }
     public DateTime? ResponseDate { get; set; }
     public string? AdminNotes { get; set; }
-    
-    
     public Property Property { get; set; }
     public ApplicationUser User { get; set; }
-}
+}   

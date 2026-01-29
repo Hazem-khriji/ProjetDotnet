@@ -4,7 +4,7 @@ using ProjetDotnet.Enums;
 using ProjetDotnet.DTOs;
 public interface IPropertyRepository : IRepository<Property>
 {
-    Task<PagedResult<Property>> GetPagedAsync(PropertyFilterDto filter);
+    Task<PagedResultDto<Property>> GetPagedAsync(PropertyFilterDto filter);
     Task<IEnumerable<Property>> GetByUserIdAsync(string userId);
     Task<IEnumerable<Property>> GetByCityAsync(string city);
     Task<IEnumerable<Property>> GetByStatusAsync(PropertyStatus status);

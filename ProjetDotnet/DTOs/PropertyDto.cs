@@ -1,5 +1,6 @@
 ﻿namespace ProjetDotnet.DTOs;
 using ProjetDotnet.Enums;
+using ProjetDotnet.Models;
 
 public class PropertyDto
 {
@@ -15,8 +16,8 @@ public class PropertyDto
     public bool IsFeatured { get; set; }
     public DateTime CreatedAt { get; set; }
     
-    // Related Data
-    public UserSummaryDto Owner { get; set; }
-    public List<PropertyImageDto> Images { get; set; }
+    
+    public UserDto Owner { get; set; }
+    public List<PropertyImage> Images { get; set; }
     public string PrimaryImageUrl { get; set; }
 }
