@@ -2,22 +2,33 @@
 
 using Microsoft.AspNetCore.Identity;
 using ProjetDotnet.Enums;
+using System.ComponentModel.DataAnnotations;
 
 public class ApplicationUser : IdentityUser
 {
-    public string FirstName { get; set; }
-    public string LastName { get; set; }
+    [Required]
+    [MaxLength(100)]
+    public string FirstName { get; set; } = string.Empty;
+    
+    [Required]
+    [MaxLength(100)]
+    public string LastName { get; set; } = string.Empty;
+    
     public string FullName => $"{FirstName} {LastName}";
-    public string PhoneNumber {get; set;}
-    public string email { get; set; }
-    public UserRole Role { get; set; }
+    
+    [MaxLength(500)]
+    public string? Address { get; set; }
+    
+    [MaxLength(500)]
+    public string? ProfileImageUrl { get; set; }
     
     public bool IsActive { get; set; } = true;
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public DateTime? LastLoginAt { get; set; }
     
-    
-    public ICollection<Property> Properties { get; set; }
-    public ICollection<Inquiry> Inquiries { get; set; }
-    public ICollection<Message> SentMessages { get; set; }
-    public ICollection<Message> ReceivedMessages { get; set; }
+    // Navigation Properties
+    public ICollection<Property> Properties { get; set; } = new List<Property>();
+    public ICollection<Inquiry> Inquiries { get; set; } = new List<Inquiry>();
+    public ICollection<Message> SentMessages { get; set; } = new List<Message>();
+    public ICollection<Message> ReceivedMessages { get; set; } = new List<Message>();
 }

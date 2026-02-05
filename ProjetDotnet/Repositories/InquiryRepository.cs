@@ -1,6 +1,4 @@
-﻿using ProjetDotnet.Models;
-
-namespace ProjetDotnet.Repositories;
+﻿namespace ProjetDotnet.Repositories;
 using Microsoft.EntityFrameworkCore;
 using ProjetDotnet.Interfaces.Repository;
 using ProjetDotnet.Data;

@@ -1,0 +1,173 @@
+﻿@model PropertyDto
+@{
+    ViewData["Title"] = "Property Details";
+}
+
+<div class="mb-3">
+    <a asp-action="Index" class="btn btn-outline-secondary">
+        <i class="bi bi-arrow-left me-1"></i> Back to List
+    </a>
+</div>
+
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card mb-4">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0 fw-bold">@Model.Title</h5>
+                @{
+                    var statusClass = Model.Status switch
+                    {
+                        PropertyStatus.Available => "success",
+                        PropertyStatus.Sold => "danger",
+                        PropertyStatus.Rented => "info",
+                        PropertyStatus.UnderContract => "warning",
+                        _ => "secondary"
+                    };
+                }
+                <span class="badge bg-@statusClass fs-6">@Model.Status</span>
+            </div>
+            <div class="card-body">
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <h4 class="text-primary fw-bold">@Model.Price.ToString("C0")</h4>
+                    </div>
+                    <div class="col-md-6 text-md-end">
+                        <span class="badge bg-info me-2">@Model.Type</span>
+                    </div>
+                </div>
+
+                <h6 class="fw-bold mb-2">Description</h6>
+                <p class="text-muted">@Model.Description</p>
+
+                <hr />
+
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <div class="d-flex align-items-center">
+                            <div class="bg-light rounded p-2 me-3">
+                                <i class="bi bi-geo-alt text-primary"></i>
+                            </div>
+                            <div>
+                                <small class="text-muted d-block">Address</small>
+                                <strong>@Model.Address</strong>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="d-flex align-items-center">
+                            <div class="bg-light rounded p-2 me-3">
+                                <i class="bi bi-rulers text-primary"></i>
+                            </div>
+                            <div>
+                                <small class="text-muted d-block">Area</small>
+                                <strong>@Model.Area m²</strong>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="d-flex align-items-center">
+                            <div class="bg-light rounded p-2 me-3">
+                                <i class="bi bi-eye text-primary"></i>
+                            </div>
+                            <div>
+                                <small class="text-muted d-block">Views</small>
+                                <strong>@Model.ViewCount</strong>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="d-flex align-items-center">
+                            <div class="bg-light rounded p-2 me-3">
+                                <i class="bi bi-person text-primary"></i>
+                            </div>
+                            <div>
+                                <small class="text-muted d-block">Owner</small>
+                                <strong>@(Model.Owner?.FullName ?? "N/A")</strong>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        @if (Model.Images?.Any() == true)
+        {
+            <div class="card">
+                <div class="card-header">
+                    <h6 class="mb-0 fw-bold">Property Images</h6>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        @foreach (var image in Model.Images)
+                        {
+                            <div class="col-md-4">
+                                <img src="@image.ImageUrl" class="img-fluid rounded" alt="Property Image" />
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+    <div class="col-lg-4">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h6 class="mb-0 fw-bold">Actions</h6>
+            </div>
+            <div class="card-body d-grid gap-2">
+                <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">
+                    <i class="bi bi-pencil me-1"></i> Edit Property
+                </a>
+                <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal">
+                    <i class="bi bi-trash me-1"></i> Delete Property
+                </button>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h6 class="mb-0 fw-bold">Update Status</h6>
+            </div>
+            <div class="card-body">
+                <form asp-action="UpdateStatus" method="post">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="id" value="@Model.Id" />
+                    <div class="mb-3">
+                        <select name="status" class="form-select">
+                            @foreach (PropertyStatus status in Enum.GetValues(typeof(PropertyStatus)))
+                            {
+                                <option value="@status" selected="@(Model.Status == status)">@status</option>
+                            }
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="bi bi-check me-1"></i> Update Status
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Confirm Delete</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to delete "<strong>@Model.Title</strong>"? This action cannot be undone.
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <form asp-action="Delete" asp-route-id="@Model.Id" method="post" class="d-inline">
+                    @Html.AntiForgeryToken()
+                    <button type="submit" class="btn btn-danger">Delete</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

@@ -11,6 +11,6 @@ public class PropertyFilterDto : PaginationParams
     public double? MinArea { get; set; }
     public double? MaxArea { get; set; }
     public bool? IsFeatured { get; set; }
-    public string? SortBy { get; set; } 
-    public string? SortOrder { get; set; } 
+    public string SortBy { get; set; } = "price";
+    public string SortOrder { get; set; } = "desc";
 }

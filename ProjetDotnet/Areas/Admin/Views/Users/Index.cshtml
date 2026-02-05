@@ -1,0 +1,156 @@
+﻿@model PagedResultDto<UserDto>
+@{
+    ViewData["Title"] = "Users Management";
+}
+
+<div class="card mb-4">
+    <div class="card-header">
+        <h6 class="mb-0 fw-bold text-primary">Search Users</h6>
+    </div>
+    <div class="card-body">
+        <form method="get" class="row g-3">
+            <div class="col-md-10">
+                <input type="text" name="searchTerm" class="form-control" 
+                       placeholder="Search by name or email..." value="@ViewBag.SearchTerm" />
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-primary w-100">
+                    <i class="bi bi-search me-1"></i> Search
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h6 class="mb-0 fw-bold text-primary">
+            Users List
+            <span class="badge bg-secondary ms-2">@Model.TotalCount total</span>
+        </h6>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead>
+                    <tr>
+                        <th>User</th>
+                        <th>Email</th>
+                        <th>Role</th>
+                        <th>Properties</th>
+                        <th>Inquiries</th>
+                        <th>Status</th>
+                        <th>Joined</th>
+                        <th class="text-end">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.Items.Any())
+                    {
+                        @foreach (var user in Model.Items)
+                        {
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div class="bg-primary rounded-circle text-white d-flex align-items-center justify-content-center me-3" 
+                                             style="width: 40px; height: 40px;">
+                                            @(user.FirstName?.Length > 0 ? user.FirstName[0].ToString().ToUpper() : "U")
+                                        </div>
+                                        <div>
+                                            <div class="fw-bold">@user.FullName</div>
+                                            <small class="text-muted">@user.PhoneNumber</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>@user.Email</td>
+                                <td>
+                                    @{
+                                        var roleClass = user.Role switch
+                                        {
+                                            "Admin" => "danger",
+                                            "Agent" => "primary",
+                                            _ => "secondary"
+                                        };
+                                    }
+                                    <span class="badge bg-@roleClass">@user.Role</span>
+                                </td>
+                                <td><span class="badge bg-info">@user.PropertyCount</span></td>
+                                <td><span class="badge bg-warning">@user.RequestCount</span></td>
+                                <td>
+                                    @if (user.IsActive)
+                                    {
+                                        <span class="badge bg-success">Active</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-secondary">Inactive</span>
+                                    }
+                                </td>
+                                <td>@user.CreatedAt.ToString("MMM dd, yyyy")</td>
+                                <td class="text-end">
+                                    <div class="btn-group">
+                                        <a asp-action="Details" asp-route-id="@user.Id" class="btn btn-sm btn-outline-primary" title="View">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+                                        <a asp-action="Edit" asp-route-id="@user.Id" class="btn btn-sm btn-outline-warning" title="Edit">
+                                            <i class="bi bi-pencil"></i>
+                                        </a>
+                                        <form asp-action="ToggleStatus" asp-route-id="@user.Id" method="post" class="d-inline">
+                                            @Html.AntiForgeryToken()
+                                            <button type="submit" class="btn btn-sm btn-outline-@(user.IsActive ? "secondary" : "success")" 
+                                                    title="@(user.IsActive ? "Deactivate" : "Activate")">
+                                                <i class="bi bi-@(user.IsActive ? "x-circle" : "check-circle")"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="8" class="text-center py-4">
+                                <i class="bi bi-people fs-1 text-muted d-block mb-2"></i>
+                                No users found
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pagination -->
+        @if (Model.TotalPages > 1)
+        {
+            <nav class="mt-4">
+                <ul class="pagination justify-content-center">
+                    <li class="page-item @(!Model.HasPrevious ? "disabled" : "")">
+                        <a class="page-link" asp-action="Index" 
+                           asp-route-pageNumber="@(Model.PageNumber - 1)"
+                           asp-route-searchTerm="@ViewBag.SearchTerm">
+                            Previous
+                        </a>
+                    </li>
+                    @for (int i = 1; i <= Model.TotalPages; i++)
+                    {
+                        <li class="page-item @(i == Model.PageNumber ? "active" : "")">
+                            <a class="page-link" asp-action="Index" 
+                               asp-route-pageNumber="@i"
+                               asp-route-searchTerm="@ViewBag.SearchTerm">
+                                @i
+                            </a>
+                        </li>
+                    }
+                    <li class="page-item @(!Model.HasNext ? "disabled" : "")">
+                        <a class="page-link" asp-action="Index" 
+                           asp-route-pageNumber="@(Model.PageNumber + 1)"
+                           asp-route-searchTerm="@ViewBag.SearchTerm">
+                            Next
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        }
+    </div>
+</div>

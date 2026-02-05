@@ -1,0 +1,139 @@
+﻿@model InquiryDto
+@{
+    ViewData["Title"] = "Inquiry Details";
+}
+
+<div class="mb-3">
+    <a asp-action="Index" class="btn btn-outline-secondary">
+        <i class="bi bi-arrow-left me-1"></i> Back to List
+    </a>
+</div>
+
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card mb-4">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0 fw-bold">Inquiry #@Model.Id</h5>
+                @{
+                    var statusClass = Model.Status switch
+                    {
+                        InquiryStatus.New => "primary",
+                        InquiryStatus.Contacted => "info",
+                        InquiryStatus.Visiting => "warning",
+                        InquiryStatus.Pending => "secondary",
+                        InquiryStatus.Closed => "success",
+                        InquiryStatus.Cancelled => "danger",
+                        _ => "secondary"
+                    };
+                }
+                <span class="badge bg-@statusClass fs-6">@Model.Status</span>
+            </div>
+            <div class="card-body">
+                <h6 class="fw-bold mb-3">Property Information</h6>
+                <div class="bg-light p-3 rounded mb-4">
+                    <a asp-controller="Properties" asp-action="Details" asp-route-id="@Model.PropertyId" class="text-decoration-none">
+                        <strong>@Model.PropertyTitle</strong>
+                    </a>
+                </div>
+
+                <h6 class="fw-bold mb-3">Message</h6>
+                <div class="bg-light p-3 rounded mb-4">
+                    <p class="mb-0">@Model.Message</p>
+                </div>
+
+                @if (Model.PreferredVisitDate.HasValue)
+                {
+                    <h6 class="fw-bold mb-3">Preferred Visit Date</h6>
+                    <div class="bg-light p-3 rounded mb-4">
+                        <i class="bi bi-calendar me-2"></i>
+                        @Model.PreferredVisitDate.Value.ToString("MMMM dd, yyyy hh:mm tt")
+                    </div>
+                }
+
+                @if (!string.IsNullOrEmpty(Model.AdminNotes))
+                {
+                    <h6 class="fw-bold mb-3">Admin Notes</h6>
+                    <div class="bg-warning bg-opacity-25 p-3 rounded">
+                        <p class="mb-0">@Model.AdminNotes</p>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h6 class="mb-0 fw-bold">Contact Information</h6>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="bg-primary rounded-circle text-white d-flex align-items-center justify-content-center me-3" 
+                             style="width: 40px; height: 40px;">
+                            @(Model.UserName?.Length > 0 ? Model.UserName[0].ToString().ToUpper() : "U")
+                        </div>
+                        <div>
+                            <div class="fw-bold">@Model.UserName</div>
+                            <small class="text-muted">@Model.UserEmail</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="d-flex align-items-center">
+                    <i class="bi bi-telephone text-primary me-3 fs-5"></i>
+                    <a href="tel:@Model.PhoneNumber" class="text-decoration-none">@Model.PhoneNumber</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="card mb-4">
+            <div class="card-header">
+                <h6 class="mb-0 fw-bold">Timeline</h6>
+            </div>
+            <div class="card-body">
+                <div class="d-flex justify-content-between mb-2">
+                    <span class="text-muted">Received</span>
+                    <span>@Model.RequestDate.ToString("MMM dd, yyyy hh:mm tt")</span>
+                </div>
+                @if (Model.ResponseDate.HasValue)
+                {
+                    <div class="d-flex justify-content-between">
+                        <span class="text-muted">Last Response</span>
+                        <span>@Model.ResponseDate.Value.ToString("MMM dd, yyyy hh:mm tt")</span>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h6 class="mb-0 fw-bold">Update Status</h6>
+            </div>
+            <div class="card-body">
+                <form asp-action="UpdateStatus" method="post">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="id" value="@Model.Id" />
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Status</label>
+                        <select name="status" class="form-select">
+                            @foreach (InquiryStatus status in Enum.GetValues(typeof(InquiryStatus)))
+                            {
+                                <option value="@status" selected="@(Model.Status == status)">@status</option>
+                            }
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Admin Notes</label>
+                        <textarea name="adminNotes" class="form-control" rows="3" placeholder="Add notes...">@Model.AdminNotes</textarea>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="bi bi-check-circle me-1"></i> Update
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

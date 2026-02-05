@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore.Metadata;
+﻿﻿using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace ProjetDotnet.Repositories;
 
@@ -118,15 +118,16 @@ public class PropertyRepository : Repository<Property>, IPropertyRepository
             .ToListAsync();
     }
 
-    // public async Task<IEnumerable<Property>> GetFeaturedAsync(int count)
-    // {
-    //     return await _dbSet
-    //         .Include(p => p.Images)
-    //         .Where(p => p.IsFeatured && p.Status == PropertyStatus.Available)
-    //         .OrderByDescending(p => p.CreatedAt)
-    //         .Take(count)
-    //         .ToListAsync();
-    // }
+    public async Task<IEnumerable<Property>> GetFeaturedAsync(int count)
+    {
+        return await _dbSet
+            .Include(p => p.Images)
+            .Include(p => p.Owner)
+            .Where(p => p.IsFeatured && p.Status == PropertyStatus.Available)
+            .OrderByDescending(p => p.CreatedAt)
+            .Take(count)
+            .ToListAsync();
+    }
 
     public async Task<int> GetTotalCountAsync()
     {

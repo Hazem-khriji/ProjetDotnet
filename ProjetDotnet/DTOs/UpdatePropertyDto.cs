@@ -1,4 +1,4 @@
-﻿namespace ProjetDotnet.DTOs;
+﻿﻿namespace ProjetDotnet.DTOs;
 using ProjetDotnet.Enums;
 using System.ComponentModel.DataAnnotations;
 
@@ -14,21 +14,36 @@ public class UpdatePropertyDto
         
     [Required]
     [Range(0, double.MaxValue)]
-    public int Price { get; set; }
+    public decimal Price { get; set; }
         
     [Required]
     public PropertyType Type { get; set; }
         
     [Required]
+    public TransactionType Transaction { get; set; }
+        
+    [Required]
     public PropertyStatus Status { get; set; }
         
     [Required]
+    [MaxLength(500)]
     public string Address { get; set; } = string.Empty;
+        
+    [MaxLength(100)]
+    public string? City { get; set; }
         
     [Required]
     [Range(1, 10000)]
     public double Area { get; set; }
         
+    [Range(0, 50)]
+    public int? Bedrooms { get; set; }
+        
+    [Range(0, 50)]
+    public int? Bathrooms { get; set; }
+        
+    [Range(1800, 2050)]
     public int? YearBuilt { get; set; }
+    
     public bool IsFeatured { get; set; }
 }

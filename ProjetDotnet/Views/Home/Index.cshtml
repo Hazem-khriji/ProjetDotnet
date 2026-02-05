@@ -1,8 +1,138 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Home - Real Estate";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<style>
+    .hero-section {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        padding: 100px 0;
+        color: white;
+        margin: -1rem -1rem 2rem -1rem;
+    }
+    .feature-card {
+        transition: transform 0.3s;
+    }
+    .feature-card:hover {
+        transform: translateY(-5px);
+    }
+    .feature-icon {
+        width: 60px;
+        height: 60px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1.5rem;
+        margin-bottom: 1rem;
+    }
+</style>
+
+<div class="hero-section text-center">
+    <div class="container">
+        <h1 class="display-4 fw-bold mb-4">Welcome to Real Estate Admin</h1>
+        <p class="lead mb-4">Manage your real estate properties, users, and inquiries all in one place</p>
+        @if (User.Identity?.IsAuthenticated == true && User.IsInRole("Admin"))
+        {
+            <a asp-area="Admin" asp-controller="Dashboard" asp-action="Index" class="btn btn-light btn-lg px-5">
+                <i class="bi bi-speedometer2 me-2"></i>Go to Dashboard
+            </a>
+        }
+        else if (User.Identity?.IsAuthenticated == true)
+        {
+            <p class="mb-3">You are logged in but don't have admin access.</p>
+            <a asp-area="Identity" asp-page="/Account/Logout" class="btn btn-outline-light btn-lg">Logout</a>
+        }
+        else
+        {
+            <a asp-area="Identity" asp-page="/Account/Login" class="btn btn-light btn-lg px-5 me-2">
+                <i class="bi bi-box-arrow-in-right me-2"></i>Login
+            </a>
+            <a asp-area="Identity" asp-page="/Account/Register" class="btn btn-outline-light btn-lg px-5">
+                <i class="bi bi-person-plus me-2"></i>Register
+            </a>
+        }
+    </div>
+</div>
+
+<div class="container">
+    <div class="row mb-5">
+        <div class="col-12 text-center">
+            <h2 class="fw-bold">Admin Features</h2>
+            <p class="text-muted">Everything you need to manage your real estate business</p>
+        </div>
+    </div>
+
+    <div class="row g-4 mb-5">
+        <div class="col-md-3">
+            <div class="card h-100 feature-card border-0 shadow-sm">
+                <div class="card-body text-center p-4">
+                    <div class="feature-icon mx-auto">
+                        <i class="bi bi-building"></i>
+                    </div>
+                    <h5 class="fw-bold">Property Management</h5>
+                    <p class="text-muted">Add, edit, and manage all your property listings with ease</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card h-100 feature-card border-0 shadow-sm">
+                <div class="card-body text-center p-4">
+                    <div class="feature-icon mx-auto">
+                        <i class="bi bi-people"></i>
+                    </div>
+                    <h5 class="fw-bold">User Management</h5>
+                    <p class="text-muted">Manage users, assign roles, and control access</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card h-100 feature-card border-0 shadow-sm">
+                <div class="card-body text-center p-4">
+                    <div class="feature-icon mx-auto">
+                        <i class="bi bi-envelope-open"></i>
+                    </div>
+                    <h5 class="fw-bold">Inquiry Handling</h5>
+                    <p class="text-muted">Track and respond to customer inquiries efficiently</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card h-100 feature-card border-0 shadow-sm">
+                <div class="card-body text-center p-4">
+                    <div class="feature-icon mx-auto">
+                        <i class="bi bi-graph-up"></i>
+                    </div>
+                    <h5 class="fw-bold">Statistics</h5>
+                    <p class="text-muted">View comprehensive analytics and reports</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card bg-light border-0">
+                <div class="card-body p-5 text-center">
+                    <h3 class="fw-bold mb-3">Default Admin Credentials</h3>
+                    <p class="text-muted mb-4">Use these credentials to access the admin panel</p>
+                    <div class="row justify-content-center">
+                        <div class="col-md-4">
+                            <div class="bg-white p-3 rounded shadow-sm">
+                                <p class="mb-1"><strong>Email:</strong></p>
+                                <code>admin@realestate.com</code>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="bg-white p-3 rounded shadow-sm">
+                                <p class="mb-1"><strong>Password:</strong></p>
+                                <code>Admin123!</code>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>

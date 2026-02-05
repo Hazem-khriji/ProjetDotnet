@@ -1,0 +1,97 @@
+﻿@model PagedResultDto<MessageDto>
+@{
+    ViewData["Title"] = "Sent Messages";
+}
+
+<div class="row">
+    <div class="col-md-3 mb-4">
+        <div class="card">
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <a asp-action="Compose" class="btn btn-primary">
+                        <i class="bi bi-pencil-square me-1"></i> Compose
+                    </a>
+                    <a asp-action="Inbox" class="btn btn-outline-secondary">
+                        <i class="bi bi-inbox me-1"></i> Inbox
+                    </a>
+                    <a asp-action="Sent" class="btn btn-outline-primary">
+                        <i class="bi bi-send me-1"></i> Sent
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-9">
+        <div class="card">
+            <div class="card-header">
+                <h6 class="mb-0 fw-bold text-primary">
+                    <i class="bi bi-send me-2"></i>Sent Messages
+                    <span class="badge bg-secondary ms-2">@Model.TotalCount messages</span>
+                </h6>
+            </div>
+            <div class="card-body p-0">
+                @if (Model.Items.Any())
+                {
+                    <div class="list-group list-group-flush">
+                        @foreach (var message in Model.Items)
+                        {
+                            <a asp-action="Details" asp-route-id="@message.Id" class="list-group-item list-group-item-action">
+                                <div class="d-flex w-100 justify-content-between align-items-center">
+                                    <div class="d-flex align-items-center">
+                                        <div class="bg-secondary rounded-circle text-white d-flex align-items-center justify-content-center me-3" 
+                                             style="width: 40px; height: 40px;">
+                                            @(message.Receiver?.FirstName?.Length > 0 ? message.Receiver.FirstName[0].ToString().ToUpper() : "U")
+                                        </div>
+                                        <div>
+                                            <h6 class="mb-1">@message.Subject</h6>
+                                            <small class="text-muted">To: @(message.Receiver?.FullName ?? "Unknown")</small>
+                                        </div>
+                                    </div>
+                                    <div class="text-end">
+                                        <small class="text-muted">@message.SentDate.ToString("MMM dd, yyyy")</small>
+                                        @if (message.IsRead)
+                                        {
+                                            <span class="badge bg-success ms-2">Read</span>
+                                        }
+                                    </div>
+                                </div>
+                                <p class="mb-0 text-muted small text-truncate mt-2" style="max-width: 500px;">
+                                    @message.Content
+                                </p>
+                            </a>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <div class="text-center py-5">
+                        <i class="bi bi-send fs-1 text-muted d-block mb-2"></i>
+                        <p class="text-muted">No sent messages</p>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <!-- Pagination -->
+        @if (Model.TotalPages > 1)
+        {
+            <nav class="mt-4">
+                <ul class="pagination justify-content-center">
+                    <li class="page-item @(!Model.HasPrevious ? "disabled" : "")">
+                        <a class="page-link" asp-action="Sent" asp-route-pageNumber="@(Model.PageNumber - 1)">Previous</a>
+                    </li>
+                    @for (int i = 1; i <= Model.TotalPages; i++)
+                    {
+                        <li class="page-item @(i == Model.PageNumber ? "active" : "")">
+                            <a class="page-link" asp-action="Sent" asp-route-pageNumber="@i">@i</a>
+                        </li>
+                    }
+                    <li class="page-item @(!Model.HasNext ? "disabled" : "")">
+                        <a class="page-link" asp-action="Sent" asp-route-pageNumber="@(Model.PageNumber + 1)">Next</a>
+                    </li>
+                </ul>
+            </nav>
+        }
+    </div>
+</div>

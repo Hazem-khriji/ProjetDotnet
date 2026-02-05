@@ -13,8 +13,7 @@ namespace ProjetDotnet.Data
 
         public DbSet<Property> Properties { get; set; }
         public DbSet<PropertyImage> PropertyImages { get; set; }
-        public DbSet<Inquiry> PropertyRequests { get; set; }
-        //public DbSet<PropertyView> PropertyViews { get; set; }
+        public DbSet<Inquiry> Inquiries { get; set; }
         public DbSet<Message> Messages { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
@@ -42,12 +41,12 @@ namespace ProjetDotnet.Data
                 
                 entity.HasOne(e => e.Owner)
                     .WithMany(u => u.Properties)
-                    .HasForeignKey(e => e.Id)
+                    .HasForeignKey(e => e.OwnerId)
                     .OnDelete(DeleteBehavior.Restrict);
                 
                 entity.HasIndex(e => e.Status);
                 entity.HasIndex(e => e.Type);
-                //entity.HasIndex(e => e.CreatedAt);
+                entity.HasIndex(e => e.CreatedAt);
             });
 
             // PropertyImage Configuration

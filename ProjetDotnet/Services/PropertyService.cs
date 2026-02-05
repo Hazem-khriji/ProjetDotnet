@@ -1,4 +1,4 @@
-﻿namespace ProjetDotnet.Services;
+﻿﻿namespace ProjetDotnet.Services;
 
 // RealEstateAdmin.Infrastructure/Services/PropertyService.cs (Créer le dossier Services)
 using ProjetDotnet.DTOs;
@@ -48,11 +48,16 @@ public class PropertyService : IPropertyService
             Description = dto.Description,
             Price = dto.Price,
             Type = dto.Type,
+            Transaction = dto.Transaction,
             Status = PropertyStatus.Available,
             Address = dto.Address,
+            City = dto.City,
             Area = dto.Area,
+            Bedrooms = dto.Bedrooms,
+            Bathrooms = dto.Bathrooms,
+            YearBuilt = dto.YearBuilt,
             Owner = user,
-            
+            CreatedAt = DateTime.UtcNow
         };
 
         var created = await _propertyRepository.AddAsync(property);
@@ -69,10 +74,16 @@ public class PropertyService : IPropertyService
         property.Description = dto.Description;
         property.Price = dto.Price;
         property.Type = dto.Type;
+        property.Transaction = dto.Transaction;
         property.Status = dto.Status;
         property.Address = dto.Address;
+        property.City = dto.City;
         property.Area = dto.Area;
-        //property.IsFeatured = dto.IsFeatured;
+        property.Bedrooms = dto.Bedrooms;
+        property.Bathrooms = dto.Bathrooms;
+        property.YearBuilt = dto.YearBuilt;
+        property.IsFeatured = dto.IsFeatured;
+        property.UpdatedAt = DateTime.UtcNow;
 
         await _propertyRepository.UpdateAsync(property);
         return MapToDto(property);
@@ -121,6 +132,12 @@ public class PropertyService : IPropertyService
         return await _propertyRepository.GetTotalCountAsync();
     }
 
+    public async Task<List<PropertyDto>> GetFeaturedPropertiesAsync(int count = 10)
+    {
+        var properties = await _propertyRepository.GetFeaturedAsync(count);
+        return properties.Select(MapToDto).ToList();
+    }
+
     private PropertyDto MapToDto(Property property)
     {
         return new PropertyDto
@@ -131,12 +148,18 @@ public class PropertyService : IPropertyService
             Price = property.Price,
             Type = property.Type,
             Status = property.Status,
+            Transaction = property.Transaction,
             Address = property.Address,
+            City = property.City,
             Area = property.Area,
-            ViewCount = property.Inquiries.Count,
-            //IsFeatured = property.IsFeatured,
-            //CreatedAt = property.CreatedAt,
+            Bedrooms = property.Bedrooms,
+            Bathrooms = property.Bathrooms,
+            YearBuilt = property.YearBuilt,
+            ViewCount = property.ViewCount,
+            IsFeatured = property.IsFeatured,
+            CreatedAt = property.CreatedAt,
             Owner = property.Owner,
+            Images = property.Images?.ToList() ?? new List<PropertyImage>(),
             PrimaryImageUrl = property.Images?.FirstOrDefault(i => i.IsPrimary)?.ImageUrl ?? ""
         };
     }

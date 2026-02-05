@@ -1,0 +1,79 @@
+﻿@model MessageDto
+@{
+    ViewData["Title"] = "Message Details";
+}
+
+<div class="row">
+    <div class="col-md-3 mb-4">
+        <div class="card">
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <a asp-action="Compose" class="btn btn-primary">
+                        <i class="bi bi-pencil-square me-1"></i> Compose
+                    </a>
+                    <a asp-action="Inbox" class="btn btn-outline-secondary">
+                        <i class="bi bi-inbox me-1"></i> Inbox
+                    </a>
+                    <a asp-action="Sent" class="btn btn-outline-secondary">
+                        <i class="bi bi-send me-1"></i> Sent
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-9">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">@Model.Subject</h5>
+                <form asp-action="Delete" asp-route-id="@Model.Id" method="post" class="d-inline">
+                    @Html.AntiForgeryToken()
+                    <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Delete this message?')">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                </form>
+            </div>
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom">
+                    <div class="d-flex align-items-center">
+                        <div class="bg-primary rounded-circle text-white d-flex align-items-center justify-content-center me-3" 
+                             style="width: 50px; height: 50px; font-size: 1.25rem;">
+                            @(Model.Sender?.FirstName?.Length > 0 ? Model.Sender.FirstName[0].ToString().ToUpper() : "U")
+                        </div>
+                        <div>
+                            <h6 class="mb-0 fw-bold">@(Model.Sender?.FullName ?? "Unknown")</h6>
+                            <small class="text-muted">@(Model.Sender?.Email ?? "")</small>
+                        </div>
+                    </div>
+                    <div class="text-end text-muted">
+                        <small>@Model.SentDate.ToString("MMMM dd, yyyy hh:mm tt")</small>
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <small class="text-muted">To: <strong>@(Model.Receiver?.FullName ?? "Unknown")</strong> (@(Model.Receiver?.Email ?? ""))</small>
+                </div>
+
+                @if (Model.Property != null)
+                {
+                    <div class="alert alert-info mb-4">
+                        <i class="bi bi-house me-2"></i>
+                        Related Property: <a asp-controller="Properties" asp-action="Details" asp-route-id="@Model.PropertyId">@Model.Property.Title</a>
+                    </div>
+                }
+
+                <div class="bg-light p-4 rounded">
+                    @Html.Raw(Model.Content.Replace("\n", "<br />"))
+                </div>
+            </div>
+            <div class="card-footer">
+                <a asp-action="Compose" asp-route-receiverId="@Model.SenderId" class="btn btn-primary">
+                    <i class="bi bi-reply me-1"></i> Reply
+                </a>
+                <a asp-action="Inbox" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-left me-1"></i> Back to Inbox
+                </a>
+            </div>
+        </div>
+    </div>
+</div>

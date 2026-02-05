@@ -1,4 +1,4 @@
-﻿namespace ProjetDotnet.DTOs;
+﻿﻿namespace ProjetDotnet.DTOs;
 
 public class StatisticsDto
 {
@@ -15,24 +15,4 @@ public class StatisticsDto
     public List<PropertyCountByCity> PropertiesByCity { get; set; } = new();
     public List<PropertyCountByType> PropertiesByType { get; set; } = new();
     public List<MonthlyStatistic> MonthlyStats { get; set; } = new();
-}
-    
-public class PropertyCountByCity
-{
-    public string City { get; set; } = string.Empty;
-    public int Count { get; set; }
-}
-    
-public class PropertyCountByType
-{
-    public string Type { get; set; } = string.Empty;
-    public int Count { get; set; }
-}
-    
-public class MonthlyStatistic
-{
-    public string Month { get; set; } = string.Empty;
-    public int PropertiesAdded { get; set; }
-    public int PropertiesSold { get; set; }
-    public int TotalViews { get; set; }
 }

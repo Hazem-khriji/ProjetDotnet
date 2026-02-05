@@ -1,9 +1,8 @@
-﻿namespace ProjetDotnet.Interfaces.Services;
+﻿﻿namespace ProjetDotnet.Interfaces.Services;
 using ProjetDotnet.DTOs;
+
 public interface IStatisticsService
 {
     Task<DashboardStatisticsDto> GetDashboardStatisticsAsync();
-    //Task<List<MonthlyStatistic>> GetMonthlyStatsAsync(int months = 12);
-    //Task<List<PropertyCountByCity>> GetPropertiesByCityAsync();
-    //Task<List<RecentActivity>> GetRecentActivitiesAsync(int count = 10);
+    Task<List<RecentActivityDto>> GetRecentActivitiesAsync(int count = 10);
 }

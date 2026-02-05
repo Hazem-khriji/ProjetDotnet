@@ -1,0 +1,152 @@
+﻿@model PagedResultDto<PropertyDto>
+@{
+    ViewData["Title"] = "Properties";
+}
+
+<div class="container py-4">
+    <h1 class="mb-4">Available Properties</h1>
+
+    <!-- Filter Form -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <form method="get" class="row g-3">
+                <div class="col-md-3">
+                    <label class="form-label">Search</label>
+                    <input type="text" name="searchTerm" class="form-control" placeholder="Search..." value="@ViewBag.SearchTerm" />
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">Type</label>
+                    <select name="type" class="form-select">
+                        <option value="">All Types</option>
+                        @foreach (PropertyType type in Enum.GetValues(typeof(PropertyType)))
+                        {
+                            <option value="@type" selected="@(ViewBag.SelectedType?.ToString() == type.ToString())">@type</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">Transaction</label>
+                    <select name="transaction" class="form-select">
+                        <option value="">All</option>
+                        @foreach (TransactionType trans in Enum.GetValues(typeof(TransactionType)))
+                        {
+                            <option value="@trans" selected="@(ViewBag.SelectedTransaction?.ToString() == trans.ToString())">@trans</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">Min Price</label>
+                    <input type="number" name="minPrice" class="form-control" placeholder="Min" value="@ViewBag.MinPrice" />
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">Max Price</label>
+                    <input type="number" name="maxPrice" class="form-control" placeholder="Max" value="@ViewBag.MaxPrice" />
+                </div>
+                <div class="col-md-1 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="bi bi-search"></i>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Properties Grid -->
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 row-cols-xl-4 g-4">
+        @if (Model.Items.Any())
+        {
+            @foreach (var property in Model.Items)
+            {
+                <div class="col">
+                    <div class="card h-100 shadow-sm">
+                        <div class="position-relative">
+                            @if (!string.IsNullOrEmpty(property.PrimaryImageUrl))
+                            {
+                                <img src="@property.PrimaryImageUrl" class="card-img-top" style="height: 200px; object-fit: cover;" alt="@property.Title" />
+                            }
+                            else
+                            {
+                                <div class="bg-secondary d-flex align-items-center justify-content-center" style="height: 200px;">
+                                    <i class="bi bi-building text-white" style="font-size: 3rem;"></i>
+                                </div>
+                            }
+                            <span class="badge bg-primary position-absolute top-0 start-0 m-2">@property.Type</span>
+                            @if (property.IsFeatured)
+                            {
+                                <span class="badge bg-warning position-absolute top-0 end-0 m-2">Featured</span>
+                            }
+                        </div>
+                        <div class="card-body">
+                            <h5 class="card-title text-truncate">@property.Title</h5>
+                            <p class="card-text text-muted small">
+                                <i class="bi bi-geo-alt me-1"></i>@property.Address
+                            </p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="h5 text-primary mb-0">@property.Price.ToString("C0")</span>
+                                <span class="text-muted small">@property.Area m²</span>
+                            </div>
+                        </div>
+                        <div class="card-footer bg-white border-top-0">
+                            <a asp-action="Details" asp-route-id="@property.Id" class="btn btn-outline-primary w-100">
+                                View Details
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            <div class="col-12 text-center py-5">
+                <i class="bi bi-house-slash fs-1 text-muted d-block mb-3"></i>
+                <h4>No properties found</h4>
+                <p class="text-muted">Try adjusting your search filters</p>
+            </div>
+        }
+    </div>
+
+    <!-- Pagination -->
+    @if (Model.TotalPages > 1)
+    {
+        <nav class="mt-4">
+            <ul class="pagination justify-content-center">
+                <li class="page-item @(!Model.HasPrevious ? "disabled" : "")">
+                    <a class="page-link" asp-action="Index"
+                       asp-route-pageNumber="@(Model.PageNumber - 1)"
+                       asp-route-searchTerm="@ViewBag.SearchTerm"
+                       asp-route-type="@ViewBag.SelectedType"
+                       asp-route-transaction="@ViewBag.SelectedTransaction"
+                       asp-route-minPrice="@ViewBag.MinPrice"
+                       asp-route-maxPrice="@ViewBag.MaxPrice">
+                        Previous
+                    </a>
+                </li>
+                @for (int i = 1; i <= Model.TotalPages; i++)
+                {
+                    <li class="page-item @(i == Model.PageNumber ? "active" : "")">
+                        <a class="page-link" asp-action="Index"
+                           asp-route-pageNumber="@i"
+                           asp-route-searchTerm="@ViewBag.SearchTerm"
+                           asp-route-type="@ViewBag.SelectedType"
+                           asp-route-transaction="@ViewBag.SelectedTransaction"
+                           asp-route-minPrice="@ViewBag.MinPrice"
+                           asp-route-maxPrice="@ViewBag.MaxPrice">
+                            @i
+                        </a>
+                    </li>
+                }
+                <li class="page-item @(!Model.HasNext ? "disabled" : "")">
+                    <a class="page-link" asp-action="Index"
+                       asp-route-pageNumber="@(Model.PageNumber + 1)"
+                       asp-route-searchTerm="@ViewBag.SearchTerm"
+                       asp-route-type="@ViewBag.SelectedType"
+                       asp-route-transaction="@ViewBag.SelectedTransaction"
+                       asp-route-minPrice="@ViewBag.MinPrice"
+                       asp-route-maxPrice="@ViewBag.MaxPrice">
+                        Next
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    }
+</div>

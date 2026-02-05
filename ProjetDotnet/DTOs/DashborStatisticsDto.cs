@@ -1,4 +1,4 @@
-﻿namespace ProjetDotnet.DTOs;
+﻿﻿namespace ProjetDotnet.DTOs;
 
 public class DashboardStatisticsDto
 {
@@ -12,9 +12,7 @@ public class DashboardStatisticsDto
     public int TotalViews { get; set; }
     public decimal TotalValue { get; set; }
     
-    public List<PropertyCountByCity> PropertiesByCity { get; set; }
-    public List<PropertyCountByType> PropertiesByType { get; set; }
-    //public List<PropertyCountByCategory> PropertiesByCategory { get; set; }
-    public List<MonthlyStatistic> MonthlyStats { get; set; }
-    //public List<RecentActivity> RecentActivities { get; set; }
+    public List<PropertyCountByCity> PropertiesByCity { get; set; } = new();
+    public List<PropertyCountByType> PropertiesByType { get; set; } = new();
+    public List<MonthlyStatistic> MonthlyStats { get; set; } = new();
 }

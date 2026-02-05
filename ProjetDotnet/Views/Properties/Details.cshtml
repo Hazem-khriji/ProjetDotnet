@@ -1,0 +1,205 @@
+﻿@model PropertyDto
+@{
+    ViewData["Title"] = Model.Title;
+}
+
+<div class="container py-4">
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="bi bi-check-circle me-2"></i>@TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="bi bi-exclamation-circle me-2"></i>@TempData["Error"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Home</a></li>
+            <li class="breadcrumb-item"><a asp-action="Index">Properties</a></li>
+            <li class="breadcrumb-item active">@Model.Title</li>
+        </ol>
+    </nav>
+
+    <div class="row">
+        <!-- Main Content -->
+        <div class="col-lg-8">
+            <div class="card mb-4">
+                <!-- Image Carousel -->
+                <div id="propertyCarousel" class="carousel slide" data-bs-ride="carousel">
+                    <div class="carousel-inner">
+                        @if (Model.Images?.Any() == true)
+                        {
+                            var isFirst = true;
+                            foreach (var image in Model.Images)
+                            {
+                                <div class="carousel-item @(isFirst ? "active" : "")">
+                                    <img src="@image.ImageUrl" class="d-block w-100" style="height: 400px; object-fit: cover;" alt="Property Image" />
+                                </div>
+                                isFirst = false;
+                            }
+                        }
+                        else
+                        {
+                            <div class="carousel-item active">
+                                <div class="bg-secondary d-flex align-items-center justify-content-center" style="height: 400px;">
+                                    <i class="bi bi-building text-white" style="font-size: 5rem;"></i>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                    @if (Model.Images?.Count > 1)
+                    {
+                        <button class="carousel-control-prev" type="button" data-bs-target="#propertyCarousel" data-bs-slide="prev">
+                            <span class="carousel-control-prev-icon"></span>
+                        </button>
+                        <button class="carousel-control-next" type="button" data-bs-target="#propertyCarousel" data-bs-slide="next">
+                            <span class="carousel-control-next-icon"></span>
+                        </button>
+                    }
+                </div>
+
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <div>
+                            <h2 class="card-title mb-2">@Model.Title</h2>
+                            <p class="text-muted mb-0">
+                                <i class="bi bi-geo-alt me-1"></i>@Model.Address
+                            </p>
+                        </div>
+                        <div class="text-end">
+                            <h3 class="text-primary mb-1">@Model.Price.ToString("C0")</h3>
+                            <span class="badge bg-primary">@Model.Type</span>
+                            <span class="badge bg-info">@Model.Status</span>
+                        </div>
+                    </div>
+
+                    <hr />
+
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-4">
+                            <div class="d-flex align-items-center">
+                                <div class="bg-light rounded-circle p-3 me-3">
+                                    <i class="bi bi-rulers text-primary"></i>
+                                </div>
+                                <div>
+                                    <small class="text-muted d-block">Area</small>
+                                    <strong>@Model.Area m²</strong>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="d-flex align-items-center">
+                                <div class="bg-light rounded-circle p-3 me-3">
+                                    <i class="bi bi-eye text-primary"></i>
+                                </div>
+                                <div>
+                                    <small class="text-muted d-block">Views</small>
+                                    <strong>@Model.ViewCount</strong>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="d-flex align-items-center">
+                                <div class="bg-light rounded-circle p-3 me-3">
+                                    <i class="bi bi-calendar text-primary"></i>
+                                </div>
+                                <div>
+                                    <small class="text-muted d-block">Listed</small>
+                                    <strong>@Model.CreatedAt.ToString("MMM dd, yyyy")</strong>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h5 class="mb-3">Description</h5>
+                    <p class="text-muted">@Model.Description</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="col-lg-4">
+            <!-- Owner Card -->
+            @if (Model.Owner != null)
+            {
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h6 class="mb-0">Listed By</h6>
+                    </div>
+                    <div class="card-body text-center">
+                        <div class="bg-primary rounded-circle text-white d-inline-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px; font-size: 1.5rem;">
+                            @(Model.Owner.FirstName?.Length > 0 ? Model.Owner.FirstName[0].ToString().ToUpper() : "U")
+                        </div>
+                        <h5 class="mb-1">@Model.Owner.FullName</h5>
+                        @if (!string.IsNullOrEmpty(Model.Owner.PhoneNumber))
+                        {
+                            <p class="text-muted mb-0">
+                                <i class="bi bi-telephone me-1"></i>@Model.Owner.PhoneNumber
+                            </p>
+                        }
+                    </div>
+                </div>
+            }
+
+            <!-- Inquiry Form -->
+            <div class="card">
+                <div class="card-header">
+                    <h6 class="mb-0">
+                        <i class="bi bi-envelope me-2"></i>Interested in this property?
+                    </h6>
+                </div>
+                <div class="card-body">
+                    @if (User.Identity?.IsAuthenticated == true)
+                    {
+                        <form asp-action="SendInquiry" method="post">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="PropertyId" value="@Model.Id" />
+
+                            <div class="mb-3">
+                                <label class="form-label">Phone Number *</label>
+                                <input type="tel" name="PhoneNumber" class="form-control" required placeholder="Your phone number" />
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">Message *</label>
+                                <textarea name="Message" class="form-control" rows="4" required placeholder="I'm interested in this property..."></textarea>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">Preferred Visit Date</label>
+                                <input type="datetime-local" name="PreferredVisitDate" class="form-control" />
+                            </div>
+
+                            <button type="submit" class="btn btn-primary w-100">
+                                <i class="bi bi-send me-2"></i>Send Inquiry
+                            </button>
+                        </form>
+                    }
+                    else
+                    {
+                        <div class="text-center py-3">
+                            <i class="bi bi-lock fs-1 text-muted d-block mb-3"></i>
+                            <p class="text-muted">Please login to send an inquiry</p>
+                            <a asp-area="Identity" asp-page="/Account/Login" class="btn btn-primary">
+                                <i class="bi bi-box-arrow-in-right me-2"></i>Login
+                            </a>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="mt-4">
+        <a asp-action="Index" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left me-2"></i>Back to Properties
+        </a>
+    </div>
+</div>

@@ -1,0 +1,312 @@
+﻿@model DashboardStatisticsDto
+@{
+    ViewData["Title"] = "Dashboard";
+}
+
+<div class="row g-4 mb-4">
+    <!-- Total Properties Card -->
+    <div class="col-xl-3 col-md-6">
+        <div class="card stat-card primary h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="text-uppercase text-muted small fw-bold">Total Properties</div>
+                        <div class="h3 mb-0 fw-bold">@Model.TotalProperties</div>
+                    </div>
+                    <div class="stat-icon text-primary">
+                        <i class="bi bi-building"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Active Properties Card -->
+    <div class="col-xl-3 col-md-6">
+        <div class="card stat-card success h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="text-uppercase text-muted small fw-bold">Active Listings</div>
+                        <div class="h3 mb-0 fw-bold">@Model.ActiveProperties</div>
+                    </div>
+                    <div class="stat-icon text-success">
+                        <i class="bi bi-check-circle"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Total Users Card -->
+    <div class="col-xl-3 col-md-6">
+        <div class="card stat-card info h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="text-uppercase text-muted small fw-bold">Total Users</div>
+                        <div class="h3 mb-0 fw-bold">@Model.TotalUsers</div>
+                    </div>
+                    <div class="stat-icon text-info">
+                        <i class="bi bi-people"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pending Requests Card -->
+    <div class="col-xl-3 col-md-6">
+        <div class="card stat-card warning h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="text-uppercase text-muted small fw-bold">Pending Inquiries</div>
+                        <div class="h3 mb-0 fw-bold">@Model.PendingRequests</div>
+                    </div>
+                    <div class="stat-icon text-warning">
+                        <i class="bi bi-clock"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4 mb-4">
+    <!-- Sold Properties -->
+    <div class="col-xl-3 col-md-6">
+        <div class="card stat-card danger h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="text-uppercase text-muted small fw-bold">Sold Properties</div>
+                        <div class="h3 mb-0 fw-bold">@Model.SoldProperties</div>
+                    </div>
+                    <div class="stat-icon text-danger">
+                        <i class="bi bi-bag-check"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Rented Properties -->
+    <div class="col-xl-3 col-md-6">
+        <div class="card stat-card info h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="text-uppercase text-muted small fw-bold">Rented Properties</div>
+                        <div class="h3 mb-0 fw-bold">@Model.RentedProperties</div>
+                    </div>
+                    <div class="stat-icon text-info">
+                        <i class="bi bi-key"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Active Users -->
+    <div class="col-xl-3 col-md-6">
+        <div class="card stat-card success h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="text-uppercase text-muted small fw-bold">Active Users</div>
+                        <div class="h3 mb-0 fw-bold">@Model.ActiveUsers</div>
+                    </div>
+                    <div class="stat-icon text-success">
+                        <i class="bi bi-person-check"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Total Value -->
+    <div class="col-xl-3 col-md-6">
+        <div class="card stat-card primary h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="text-uppercase text-muted small fw-bold">Total Portfolio Value</div>
+                        <div class="h4 mb-0 fw-bold">@Model.TotalValue.ToString("C0")</div>
+                    </div>
+                    <div class="stat-icon text-primary">
+                        <i class="bi bi-currency-dollar"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <!-- Properties by Type Chart -->
+    <div class="col-xl-6">
+        <div class="card h-100">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h6 class="mb-0 fw-bold text-primary">Properties by Type</h6>
+            </div>
+            <div class="card-body">
+                <canvas id="propertiesByTypeChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Stats -->
+    <div class="col-xl-6">
+        <div class="card h-100">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h6 class="mb-0 fw-bold text-primary">Property Distribution</h6>
+            </div>
+            <div class="card-body">
+                <canvas id="propertyStatusChart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4 mt-2">
+    <!-- Quick Actions -->
+    <div class="col-xl-4">
+        <div class="card h-100">
+            <div class="card-header">
+                <h6 class="mb-0 fw-bold text-primary">Quick Actions</h6>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <a asp-controller="Properties" asp-action="Create" class="btn btn-primary">
+                        <i class="bi bi-plus-circle me-2"></i>Add New Property
+                    </a>
+                    <a asp-controller="Users" asp-action="Index" class="btn btn-outline-primary">
+                        <i class="bi bi-people me-2"></i>Manage Users
+                    </a>
+                    <a asp-controller="Inquiries" asp-action="Index" class="btn btn-outline-warning">
+                        <i class="bi bi-envelope-open me-2"></i>View Inquiries (@Model.PendingRequests pending)
+                    </a>
+                    <a asp-controller="Messages" asp-action="Compose" class="btn btn-outline-info">
+                        <i class="bi bi-chat me-2"></i>Send Message
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Properties by Type List -->
+    <div class="col-xl-8">
+        <div class="card h-100">
+            <div class="card-header">
+                <h6 class="mb-0 fw-bold text-primary">Properties by Type (Details)</h6>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Property Type</th>
+                                <th class="text-center">Count</th>
+                                <th>Percentage</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model.PropertiesByType != null && Model.PropertiesByType.Any())
+                            {
+                                var total = Model.PropertiesByType.Sum(p => p.Count);
+                                foreach (var item in Model.PropertiesByType)
+                                {
+                                    var percentage = total > 0 ? (item.Count * 100.0 / total) : 0;
+                                    <tr>
+                                        <td>
+                                            <i class="bi bi-house me-2 text-primary"></i>
+                                            @item.Type
+                                        </td>
+                                        <td class="text-center">
+                                            <span class="badge bg-primary">@item.Count</span>
+                                        </td>
+                                        <td>
+                                            <div class="progress" style="height: 20px;">
+                                                <div class="progress-bar bg-primary" role="progressbar" 
+                                                     style="width: @percentage%" 
+                                                     aria-valuenow="@percentage" aria-valuemin="0" aria-valuemax="100">
+                                                    @percentage.ToString("F1")%
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                            else
+                            {
+                                <tr>
+                                    <td colspan="3" class="text-center text-muted">No data available</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Properties by Type Chart
+        var typeCtx = document.getElementById('propertiesByTypeChart').getContext('2d');
+        var typeData = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.PropertiesByType ?? new List<PropertyCountByType>()));
+        
+        new Chart(typeCtx, {
+            type: 'doughnut',
+            data: {
+                labels: typeData.map(x => x.type),
+                datasets: [{
+                    data: typeData.map(x => x.count),
+                    backgroundColor: [
+                        '#4e73df', '#1cc88a', '#36b9cc', '#f6c23e', '#e74a3b',
+                        '#6f42c1', '#fd7e14', '#20c997', '#6c757d', '#17a2b8'
+                    ]
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    }
+                }
+            }
+        });
+
+        // Property Status Chart
+        var statusCtx = document.getElementById('propertyStatusChart').getContext('2d');
+        new Chart(statusCtx, {
+            type: 'bar',
+            data: {
+                labels: ['Active', 'Sold', 'Rented'],
+                datasets: [{
+                    label: 'Properties',
+                    data: [@Model.ActiveProperties, @Model.SoldProperties, @Model.RentedProperties],
+                    backgroundColor: ['#1cc88a', '#e74a3b', '#36b9cc']
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    </script>
+}
