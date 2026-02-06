@@ -10,6 +10,7 @@ public class PropertyFilterDto : PaginationParams
     public decimal? MaxPrice { get; set; }
     public double? MinArea { get; set; }
     public double? MaxArea { get; set; }
+    public string? City { get; set; }
     public bool? IsFeatured { get; set; }
     public string SortBy { get; set; } = "price";
     public string SortOrder { get; set; } = "desc";

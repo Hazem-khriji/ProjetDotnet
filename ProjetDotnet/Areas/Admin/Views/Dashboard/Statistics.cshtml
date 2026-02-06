@@ -1,0 +1,422 @@
+﻿@model DashboardStatisticsDto
+@{
+    ViewData["Title"] = "Statistics & Analytics";
+}
+
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">
+        <i class="bi bi-graph-up me-2"></i>Statistics & Analytics
+    </h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <div class="btn-group me-2">
+            <button type="button" class="btn btn-sm btn-outline-secondary" onclick="window.print()">
+                <i class="bi bi-printer me-1"></i>Print
+            </button>
+            <button type="button" class="btn btn-sm btn-outline-secondary" onclick="exportToPDF()">
+                <i class="bi bi-file-pdf me-1"></i>Export PDF
+            </button>
+        </div>
+        <button type="button" class="btn btn-sm btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown">
+            <i class="bi bi-calendar3 me-1"></i>
+            Last 30 days
+        </button>
+        <ul class="dropdown-menu">
+            <li><a class="dropdown-item" href="#">Last 7 days</a></li>
+            <li><a class="dropdown-item" href="#">Last 30 days</a></li>
+            <li><a class="dropdown-item" href="#">Last 90 days</a></li>
+            <li><a class="dropdown-item" href="#">This year</a></li>
+        </ul>
+    </div>
+</div>
+
+<!-- Overview Cards -->
+<div class="row g-4 mb-4">
+    <div class="col-xl-3 col-md-6">
+        <div class="card stat-card primary h-100 shadow-sm">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="text-uppercase text-muted small fw-bold mb-1">Total Properties</div>
+                        <div class="h2 mb-0 fw-bold text-primary">@Model.TotalProperties</div>
+                        <small class="text-success"><i class="bi bi-arrow-up"></i> 12% from last month</small>
+                    </div>
+                    <div class="stat-icon text-primary opacity-75">
+                        <i class="bi bi-building fs-1"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6">
+        <div class="card stat-card success h-100 shadow-sm">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="text-uppercase text-muted small fw-bold mb-1">Active Listings</div>
+                        <div class="h2 mb-0 fw-bold text-success">@Model.ActiveProperties</div>
+                        <small class="text-muted">Available for sale/rent</small>
+                    </div>
+                    <div class="stat-icon text-success opacity-75">
+                        <i class="bi bi-check-circle fs-1"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6">
+        <div class="card stat-card warning h-100 shadow-sm">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="text-uppercase text-muted small fw-bold mb-1">Total Revenue</div>
+                        <div class="h2 mb-0 fw-bold text-warning">@Model.TotalValue.ToString("C0")</div>
+                        <small class="text-success"><i class="bi bi-arrow-up"></i> 8% increase</small>
+                    </div>
+                    <div class="stat-icon text-warning opacity-75">
+                        <i class="bi bi-currency-dollar fs-1"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6">
+        <div class="card stat-card info h-100 shadow-sm">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="text-uppercase text-muted small fw-bold mb-1">Total Users</div>
+                        <div class="h2 mb-0 fw-bold text-info">@Model.TotalUsers</div>
+                        <small class="text-success">@Model.ActiveUsers active</small>
+                    </div>
+                    <div class="stat-icon text-info opacity-75">
+                        <i class="bi bi-people fs-1"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Charts Section -->
+<div class="row g-4 mb-4">
+    <!-- Monthly Trend Chart -->
+    <div class="col-xl-8">
+        <div class="card shadow-sm h-100">
+            <div class="card-header bg-white">
+                <h5 class="mb-0 fw-bold text-primary">
+                    <i class="bi bi-graph-up me-2"></i>Monthly Trend Analysis
+                </h5>
+            </div>
+            <div class="card-body">
+                <canvas id="monthlyTrendChart" style="height: 300px;"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Property Status Distribution -->
+    <div class="col-xl-4">
+        <div class="card shadow-sm h-100">
+            <div class="card-header bg-white">
+                <h5 class="mb-0 fw-bold text-primary">
+                    <i class="bi bi-pie-chart me-2"></i>Status Distribution
+                </h5>
+            </div>
+            <div class="card-body">
+                <canvas id="statusDistributionChart"></canvas>
+                <div class="mt-3">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span><i class="bi bi-circle-fill text-success me-2"></i>Active</span>
+                        <span class="fw-bold">@Model.ActiveProperties (@(Model.TotalProperties > 0 ? (Model.ActiveProperties * 100 / Model.TotalProperties) : 0)%)</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span><i class="bi bi-circle-fill text-danger me-2"></i>Sold</span>
+                        <span class="fw-bold">@Model.SoldProperties (@(Model.TotalProperties > 0 ? (Model.SoldProperties * 100 / Model.TotalProperties) : 0)%)</span>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <span><i class="bi bi-circle-fill text-info me-2"></i>Rented</span>
+                        <span class="fw-bold">@Model.RentedProperties (@(Model.TotalProperties > 0 ? (Model.RentedProperties * 100 / Model.TotalProperties) : 0)%)</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Properties by Type and City -->
+<div class="row g-4 mb-4">
+    <!-- Properties by Type -->
+    <div class="col-xl-6">
+        <div class="card shadow-sm h-100">
+            <div class="card-header bg-white">
+                <h5 class="mb-0 fw-bold text-primary">
+                    <i class="bi bi-house me-2"></i>Properties by Type
+                </h5>
+            </div>
+            <div class="card-body">
+                <canvas id="propertiesByTypeChart" style="height: 250px;"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Top Cities -->
+    <div class="col-xl-6">
+        <div class="card shadow-sm h-100">
+            <div class="card-header bg-white">
+                <h5 class="mb-0 fw-bold text-primary">
+                    <i class="bi bi-geo-alt me-2"></i>Top Cities
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>City</th>
+                                <th class="text-center">Properties</th>
+                                <th>Distribution</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model.PropertiesByCity != null && Model.PropertiesByCity.Any())
+                            {
+                                var total = Model.PropertiesByCity.Sum(p => p.Count);
+                                foreach (var item in Model.PropertiesByCity)
+                                {
+                                    var percentage = total > 0 ? (item.Count * 100.0 / total) : 0;
+                                    <tr>
+                                        <td>
+                                            <i class="bi bi-geo-alt-fill text-primary me-2"></i>
+                                            <strong>@item.City</strong>
+                                        </td>
+                                        <td class="text-center">
+                                            <span class="badge bg-primary">@item.Count</span>
+                                        </td>
+                                        <td>
+                                            <div class="progress" style="height: 25px;">
+                                                <div class="progress-bar bg-gradient" role="progressbar" 
+                                                     style="width: @percentage%" 
+                                                     aria-valuenow="@percentage" aria-valuemin="0" aria-valuemax="100">
+                                                    @percentage.ToString("F1")%
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                            else
+                            {
+                                <tr>
+                                    <td colspan="3" class="text-center text-muted py-4">
+                                        <i class="bi bi-inbox fs-3 d-block mb-2"></i>
+                                        No data available
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Detailed Statistics -->
+<div class="row g-4 mb-4">
+    <div class="col-12">
+        <div class="card shadow-sm">
+            <div class="card-header bg-white">
+                <h5 class="mb-0 fw-bold text-primary">
+                    <i class="bi bi-table me-2"></i>Detailed Monthly Statistics
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Month</th>
+                                <th class="text-center">Properties Added</th>
+                                <th class="text-center">Properties Sold</th>
+                                <th class="text-center">Total Views</th>
+                                <th class="text-end">Total Value</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model.MonthlyStats != null && Model.MonthlyStats.Any())
+                            {
+                                foreach (var stat in Model.MonthlyStats.OrderByDescending(s => s.Month))
+                                {
+                                    <tr>
+                                        <td><i class="bi bi-calendar3 text-primary me-2"></i>@stat.Month</td>
+                                        <td class="text-center">
+                                            <span class="badge bg-success">@stat.PropertiesAdded</span>
+                                        </td>
+                                        <td class="text-center">
+                                            <span class="badge bg-danger">@stat.PropertiesSold</span>
+                                        </td>
+                                        <td class="text-center">
+                                            <span class="badge bg-info">@stat.TotalViews</span>
+                                        </td>
+                                        <td class="text-end fw-bold">@stat.TotalValue.ToString("C0")</td>
+                                    </tr>
+                                }
+                            }
+                            else
+                            {
+                                <tr>
+                                    <td colspan="5" class="text-center text-muted py-4">No statistics available</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // Monthly Trend Chart
+        var monthlyCtx = document.getElementById('monthlyTrendChart').getContext('2d');
+        var monthlyData = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.MonthlyStats ?? new List<MonthlyStatistic>()));
+        
+        new Chart(monthlyCtx, {
+            type: 'line',
+            data: {
+                labels: monthlyData.map(x => x.month),
+                datasets: [
+                    {
+                        label: 'Properties Added',
+                        data: monthlyData.map(x => x.propertiesAdded),
+                        borderColor: '#4e73df',
+                        backgroundColor: 'rgba(78, 115, 223, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    },
+                    {
+                        label: 'Properties Sold',
+                        data: monthlyData.map(x => x.propertiesSold),
+                        borderColor: '#e74a3b',
+                        backgroundColor: 'rgba(231, 74, 59, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'top'
+                    },
+                    tooltip: {
+                        mode: 'index',
+                        intersect: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+
+        // Status Distribution Chart
+        var statusCtx = document.getElementById('statusDistributionChart').getContext('2d');
+        new Chart(statusCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Active', 'Sold', 'Rented'],
+                datasets: [{
+                    data: [@Model.ActiveProperties, @Model.SoldProperties, @Model.RentedProperties],
+                    backgroundColor: ['#1cc88a', '#e74a3b', '#36b9cc'],
+                    borderWidth: 2,
+                    borderColor: '#fff'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                }
+            }
+        });
+
+        // Properties by Type Chart
+        var typeCtx = document.getElementById('propertiesByTypeChart').getContext('2d');
+        var typeData = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.PropertiesByType ?? new List<PropertyCountByType>()));
+        
+        new Chart(typeCtx, {
+            type: 'bar',
+            data: {
+                labels: typeData.map(x => x.type),
+                datasets: [{
+                    label: 'Properties',
+                    data: typeData.map(x => x.count),
+                    backgroundColor: [
+                        '#4e73df', '#1cc88a', '#36b9cc', '#f6c23e', '#e74a3b',
+                        '#6f42c1', '#fd7e14', '#20c997', '#6c757d', '#17a2b8'
+                    ]
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+
+        function exportToPDF() {
+            alert('PDF export functionality will be implemented');
+        }
+    </script>
+}
+
+<style>
+    .stat-card {
+        border: none;
+        border-radius: 10px;
+        transition: transform 0.2s;
+    }
+    
+    .stat-card:hover {
+        transform: translateY(-5px);
+    }
+    
+    .stat-icon {
+        opacity: 0.7;
+    }
+    
+    .progress {
+        border-radius: 10px;
+    }
+    
+    .progress-bar {
+        border-radius: 10px;
+    }
+    
+    @@media print {
+        .btn-toolbar {
+            display: none;
+        }
+    }
+</style>

@@ -1,4 +1,4 @@
-﻿﻿using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ProjetDotnet.Interfaces.Services;
 using ProjetDotnet.ViewModels;
@@ -60,5 +60,11 @@ public class DashboardController : Controller
     {
         var activities = await _statisticsService.GetRecentActivitiesAsync(10);
         return Json(activities);
+    }
+
+    public async Task<IActionResult> Statistics()
+    {
+        var statistics = await _statisticsService.GetDashboardStatisticsAsync();
+        return View(statistics);
     }
 }

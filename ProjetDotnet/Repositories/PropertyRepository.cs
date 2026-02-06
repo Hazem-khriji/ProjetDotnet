@@ -1,6 +1,4 @@
-﻿﻿using Microsoft.EntityFrameworkCore.Metadata;
-
-namespace ProjetDotnet.Repositories;
+﻿namespace ProjetDotnet.Repositories;
 
 using Microsoft.EntityFrameworkCore;
 using ProjetDotnet.DTOs;
@@ -38,8 +36,11 @@ public class PropertyRepository : Repository<Property>, IPropertyRepository
         if (filter.Status.HasValue)
             query = query.Where(p => p.Status == filter.Status.Value);
 
-        // if (!string.IsNullOrWhiteSpace(filter.City))
-        //     query = query.Where(p => p.City == filter.City);
+        if (!string.IsNullOrWhiteSpace(filter.City))
+            query = query.Where(p => p.City != null && p.City.Contains(filter.City));
+
+        if (filter.Transaction.HasValue)
+            query = query.Where(p => p.Transaction == filter.Transaction.Value);
 
         if (filter.MinPrice.HasValue)
             query = query.Where(p => p.Price >= filter.MinPrice.Value);
@@ -98,7 +99,7 @@ public class PropertyRepository : Repository<Property>, IPropertyRepository
     {
         return await _dbSet
             .Include(p => p.Images)
-            .Where(p => p.Owner.Id == userId)
+            .Where(p => p.Owner != null && p.Owner.Id == userId)
             .ToListAsync();
     }
 
