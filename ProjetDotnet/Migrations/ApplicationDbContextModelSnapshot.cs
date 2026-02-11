@@ -18,32 +18,33 @@ namespace ProjetDotnet.Migrations
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("ProductVersion", "9.0.11")
-                .HasAnnotation("Relational:MaxIdentifierLength", 64);
+                .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
-            MySqlModelBuilderExtensions.AutoIncrementColumns(modelBuilder);
+            SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
                 {
                     b.Property<string>("Id")
-                        .HasColumnType("varchar(255)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
-                        .HasColumnType("longtext");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Name")
                         .HasMaxLength(256)
-                        .HasColumnType("varchar(256)");
+                        .HasColumnType("nvarchar(256)");
 
                     b.Property<string>("NormalizedName")
                         .HasMaxLength(256)
-                        .HasColumnType("varchar(256)");
+                        .HasColumnType("nvarchar(256)");
 
                     b.HasKey("Id");
 
                     b.HasIndex("NormalizedName")
                         .IsUnique()
-                        .HasDatabaseName("RoleNameIndex");
+                        .HasDatabaseName("RoleNameIndex")
+                        .HasFilter("[NormalizedName] IS NOT NULL");
 
                     b.ToTable("AspNetRoles", (string)null);
                 });
@@ -54,17 +55,17 @@ namespace ProjetDotnet.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("ClaimType")
-                        .HasColumnType("longtext");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ClaimValue")
-                        .HasColumnType("longtext");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("RoleId")
                         .IsRequired()
-                        .HasColumnType("varchar(255)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
 
@@ -79,17 +80,17 @@ namespace ProjetDotnet.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("ClaimType")
-                        .HasColumnType("longtext");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ClaimValue")
-                        .HasColumnType("longtext");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("UserId")
                         .IsRequired()
-                        .HasColumnType("varchar(255)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
 
@@ -101,17 +102,17 @@ namespace ProjetDotnet.Migrations
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
                     b.Property<string>("LoginProvider")
-                        .HasColumnType("varchar(255)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("ProviderKey")
-                        .HasColumnType("varchar(255)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("ProviderDisplayName")
-                        .HasColumnType("longtext");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("UserId")
                         .IsRequired()
-                        .HasColumnType("varchar(255)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("LoginProvider", "ProviderKey");
 
@@ -123,10 +124,10 @@ namespace ProjetDotnet.Migrations
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
                 {
                     b.Property<string>("UserId")
-                        .HasColumnType("varchar(255)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("RoleId")
-                        .HasColumnType("varchar(255)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("UserId", "RoleId");
 
@@ -138,16 +139,16 @@ namespace ProjetDotnet.Migrations
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
                     b.Property<string>("UserId")
-                        .HasColumnType("varchar(255)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("LoginProvider")
-                        .HasColumnType("varchar(255)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Name")
-                        .HasColumnType("varchar(255)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Value")
-                        .HasColumnType("longtext");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("UserId", "LoginProvider", "Name");
 
@@ -157,81 +158,81 @@ namespace ProjetDotnet.Migrations
             modelBuilder.Entity("ProjetDotnet.Models.ApplicationUser", b =>
                 {
                     b.Property<string>("Id")
-                        .HasColumnType("varchar(255)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<int>("AccessFailedCount")
                         .HasColumnType("int");
 
                     b.Property<string>("Address")
                         .HasMaxLength(500)
-                        .HasColumnType("varchar(500)");
+                        .HasColumnType("nvarchar(500)");
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
-                        .HasColumnType("longtext");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime(6)");
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("Email")
                         .HasMaxLength(256)
-                        .HasColumnType("varchar(256)");
+                        .HasColumnType("nvarchar(256)");
 
                     b.Property<bool>("EmailConfirmed")
-                        .HasColumnType("tinyint(1)");
+                        .HasColumnType("bit");
 
                     b.Property<string>("FirstName")
                         .IsRequired()
                         .HasMaxLength(100)
-                        .HasColumnType("varchar(100)");
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<bool>("IsActive")
-                        .HasColumnType("tinyint(1)");
+                        .HasColumnType("bit");
 
                     b.Property<DateTime?>("LastLoginAt")
-                        .HasColumnType("datetime(6)");
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("LastName")
                         .IsRequired()
                         .HasMaxLength(100)
-                        .HasColumnType("varchar(100)");
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<bool>("LockoutEnabled")
-                        .HasColumnType("tinyint(1)");
+                        .HasColumnType("bit");
 
                     b.Property<DateTimeOffset?>("LockoutEnd")
-                        .HasColumnType("datetime(6)");
+                        .HasColumnType("datetimeoffset");
 
                     b.Property<string>("NormalizedEmail")
                         .HasMaxLength(256)
-                        .HasColumnType("varchar(256)");
+                        .HasColumnType("nvarchar(256)");
 
                     b.Property<string>("NormalizedUserName")
                         .HasMaxLength(256)
-                        .HasColumnType("varchar(256)");
+                        .HasColumnType("nvarchar(256)");
 
                     b.Property<string>("PasswordHash")
-                        .HasColumnType("longtext");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("PhoneNumber")
-                        .HasColumnType("longtext");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("PhoneNumberConfirmed")
-                        .HasColumnType("tinyint(1)");
+                        .HasColumnType("bit");
 
                     b.Property<string>("ProfileImageUrl")
                         .HasMaxLength(500)
-                        .HasColumnType("varchar(500)");
+                        .HasColumnType("nvarchar(500)");
 
                     b.Property<string>("SecurityStamp")
-                        .HasColumnType("longtext");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("TwoFactorEnabled")
-                        .HasColumnType("tinyint(1)");
+                        .HasColumnType("bit");
 
                     b.Property<string>("UserName")
                         .HasMaxLength(256)
-                        .HasColumnType("varchar(256)");
+                        .HasColumnType("nvarchar(256)");
 
                     b.HasKey("Id");
 
@@ -240,7 +241,8 @@ namespace ProjetDotnet.Migrations
 
                     b.HasIndex("NormalizedUserName")
                         .IsUnique()
-                        .HasDatabaseName("UserNameIndex");
+                        .HasDatabaseName("UserNameIndex")
+                        .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.ToTable("AspNetUsers", (string)null);
                 });
@@ -251,38 +253,38 @@ namespace ProjetDotnet.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("AdminNotes")
-                        .HasColumnType("longtext");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Message")
                         .IsRequired()
                         .HasMaxLength(1000)
-                        .HasColumnType("varchar(1000)");
+                        .HasColumnType("nvarchar(1000)");
 
                     b.Property<string>("PhoneNumber")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime?>("PreferredVisitDate")
-                        .HasColumnType("datetime(6)");
+                        .HasColumnType("datetime2");
 
                     b.Property<int>("PropertyId")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("RequestDate")
-                        .HasColumnType("datetime(6)");
+                        .HasColumnType("datetime2");
 
                     b.Property<DateTime?>("ResponseDate")
-                        .HasColumnType("datetime(6)");
+                        .HasColumnType("datetime2");
 
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
                     b.Property<string>("UserId")
                         .IsRequired()
-                        .HasColumnType("varchar(255)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
 
@@ -303,34 +305,34 @@ namespace ProjetDotnet.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Content")
                         .IsRequired()
                         .HasMaxLength(2000)
-                        .HasColumnType("varchar(2000)");
+                        .HasColumnType("nvarchar(2000)");
 
                     b.Property<bool>("IsRead")
-                        .HasColumnType("tinyint(1)");
+                        .HasColumnType("bit");
 
                     b.Property<int?>("PropertyId")
                         .HasColumnType("int");
 
                     b.Property<string>("ReceiverId")
                         .IsRequired()
-                        .HasColumnType("varchar(255)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("SenderId")
                         .IsRequired()
-                        .HasColumnType("varchar(255)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<DateTime>("SentDate")
-                        .HasColumnType("datetime(6)");
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("Subject")
                         .IsRequired()
                         .HasMaxLength(200)
-                        .HasColumnType("varchar(200)");
+                        .HasColumnType("nvarchar(200)");
 
                     b.HasKey("Id");
 
@@ -353,12 +355,12 @@ namespace ProjetDotnet.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Address")
                         .IsRequired()
                         .HasMaxLength(500)
-                        .HasColumnType("varchar(500)");
+                        .HasColumnType("nvarchar(500)");
 
                     b.Property<decimal>("Area")
                         .HasColumnType("decimal(10,2)");
@@ -371,21 +373,21 @@ namespace ProjetDotnet.Migrations
 
                     b.Property<string>("City")
                         .HasMaxLength(100)
-                        .HasColumnType("varchar(100)");
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime(6)");
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasMaxLength(2000)
-                        .HasColumnType("varchar(2000)");
+                        .HasColumnType("nvarchar(2000)");
 
                     b.Property<bool>("IsFeatured")
-                        .HasColumnType("tinyint(1)");
+                        .HasColumnType("bit");
 
                     b.Property<string>("OwnerId")
-                        .HasColumnType("varchar(255)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<decimal>("Price")
                         .HasColumnType("decimal(18,2)");
@@ -396,7 +398,7 @@ namespace ProjetDotnet.Migrations
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasMaxLength(200)
-                        .HasColumnType("varchar(200)");
+                        .HasColumnType("nvarchar(200)");
 
                     b.Property<int>("Transaction")
                         .HasColumnType("int");
@@ -405,7 +407,7 @@ namespace ProjetDotnet.Migrations
                         .HasColumnType("int");
 
                     b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("datetime(6)");
+                        .HasColumnType("datetime2");
 
                     b.Property<int>("ViewCount")
                         .HasColumnType("int");
@@ -432,26 +434,26 @@ namespace ProjetDotnet.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int>("DisplayOrder")
                         .HasColumnType("int");
 
                     b.Property<string>("ImageUrl")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsPrimary")
-                        .HasColumnType("tinyint(1)");
+                        .HasColumnType("bit");
 
                     b.Property<int>("PropertyId")
                         .HasColumnType("int");
 
                     b.Property<string>("ThumbnailUrl")
-                        .HasColumnType("longtext");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("UploadedAt")
-                        .HasColumnType("datetime(6)");
+                        .HasColumnType("datetime2");
 
                     b.HasKey("Id");
 
