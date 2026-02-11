@@ -2,6 +2,8 @@ import { Routes, Route } from "react-router";
 import Home from "./pages/Home";
 import Signup from "./pages/Signup";
 import Signin from "./pages/Signin";
+import Properties from "./pages/Properties";
+import PropertyDetails from "./pages/PropertyDetails";
 import './index.css'
 
 function App() {
@@ -9,7 +11,9 @@ function App() {
         <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/signup" element={<Signup />} />
-            <Route path="/signin" element={<Signin />} />
+            <Route path="/signin" element={<Signin />} />       
+            <Route path="/properties" element={<Properties />} />
+            <Route path="/property/:id" element={<PropertyDetails />} />
         </Routes>
     );
 }

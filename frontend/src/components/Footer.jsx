@@ -1,4 +1,4 @@
-﻿﻿import { useState } from 'react'
+﻿import { useState } from 'react'
 import logoDark from '/assets/logo_dark.svg'
 
 const Footer = () => {

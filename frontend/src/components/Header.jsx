@@ -12,7 +12,7 @@ const Header = () => {
           Explore homes that fit your dreams
         </h2>
         <div className="space-x-6 mt-16">
-          <a href="#Projects" className="border border-white px-8 py-3 rounded">Projects</a>
+          <a href="#Projects" className="border border-white px-8 py-3 rounded">Properties</a>
           <a href="#Contact" className="bg-blue-500 px-8 py-3 rounded">Contact Us</a>
         </div>
       </div>
