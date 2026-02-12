@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿﻿using Microsoft.AspNetCore.Identity;
 using ProjetDotnet.Data;
 using ProjetDotnet.Enums;
 using ProjetDotnet.Models;
@@ -133,6 +133,83 @@ public static class DatabaseSeeder
             };
 
             context.Properties.AddRange(sampleProperties);
+            await context.SaveChangesAsync();
+
+            // Add sample images for properties
+            var sampleImages = new List<PropertyImage>
+            {
+                // Images for Modern Downtown Apartment
+                new PropertyImage
+                {
+                    PropertyId = sampleProperties[0].Id,
+                    ImageUrl = "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=800",
+                    IsPrimary = true,
+                    DisplayOrder = 0,
+                    UploadedAt = DateTime.UtcNow
+                },
+                new PropertyImage
+                {
+                    PropertyId = sampleProperties[0].Id,
+                    ImageUrl = "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=800",
+                    IsPrimary = false,
+                    DisplayOrder = 1,
+                    UploadedAt = DateTime.UtcNow
+                },
+                // Images for Luxury Family Villa
+                new PropertyImage
+                {
+                    PropertyId = sampleProperties[1].Id,
+                    ImageUrl = "https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=800",
+                    IsPrimary = true,
+                    DisplayOrder = 0,
+                    UploadedAt = DateTime.UtcNow
+                },
+                new PropertyImage
+                {
+                    PropertyId = sampleProperties[1].Id,
+                    ImageUrl = "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800",
+                    IsPrimary = false,
+                    DisplayOrder = 1,
+                    UploadedAt = DateTime.UtcNow
+                },
+                // Images for Cozy Studio Apartment
+                new PropertyImage
+                {
+                    PropertyId = sampleProperties[2].Id,
+                    ImageUrl = "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=800",
+                    IsPrimary = true,
+                    DisplayOrder = 0,
+                    UploadedAt = DateTime.UtcNow
+                },
+                // Images for Commercial Office Space
+                new PropertyImage
+                {
+                    PropertyId = sampleProperties[3].Id,
+                    ImageUrl = "https://images.unsplash.com/photo-1497366216548-37526070297c?w=800",
+                    IsPrimary = true,
+                    DisplayOrder = 0,
+                    UploadedAt = DateTime.UtcNow
+                },
+                // Images for Spacious Family House
+                new PropertyImage
+                {
+                    PropertyId = sampleProperties[4].Id,
+                    ImageUrl = "https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=800",
+                    IsPrimary = true,
+                    DisplayOrder = 0,
+                    UploadedAt = DateTime.UtcNow
+                },
+                new PropertyImage
+                {
+                    PropertyId = sampleProperties[4].Id,
+                    ImageUrl = "https://images.unsplash.com/photo-1570129477492-45c003edd2be?w=800",
+                    IsPrimary = false,
+                    DisplayOrder = 1,
+                    UploadedAt = DateTime.UtcNow
+                }
+            };
+
+            context.PropertyImages.AddRange(sampleImages);
             await context.SaveChangesAsync();
 
             // Add sample inquiries

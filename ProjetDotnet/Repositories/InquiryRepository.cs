@@ -1,4 +1,4 @@
-﻿namespace ProjetDotnet.Repositories;
+﻿﻿namespace ProjetDotnet.Repositories;
 using Microsoft.EntityFrameworkCore;
 using ProjetDotnet.Interfaces.Repository;
 using ProjetDotnet.Data;
@@ -72,5 +72,39 @@ public class InquiryRepository : Repository<Inquiry>, IInquiryRepository
         public async Task<int> GetPendingCountAsync()
         {
             return await _dbSet.CountAsync(r => r.Status == InquiryStatus.Pending);
+        }
+
+        public async Task<PagedResultDto<Inquiry>> GetByPropertyOwnerIdAsync(
+            string ownerId, 
+            int pageNumber, 
+            int pageSize, 
+            InquiryStatus? status = null)
+        {
+            var query = _dbSet
+                .Include(r => r.Property)
+                .Include(r => r.User)
+                .Where(r => r.Property.OwnerId == ownerId)
+                .AsQueryable();
+
+            if (status.HasValue)
+            {
+                query = query.Where(r => r.Status == status.Value);
+            }
+
+            var totalCount = await query.CountAsync();
+
+            var items = await query
+                .OrderByDescending(r => r.RequestDate)
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            return new PagedResultDto<Inquiry>
+            {
+                Items = items,
+                TotalCount = totalCount,
+                PageNumber = pageNumber,
+                PageSize = pageSize
+            };
         }
     }

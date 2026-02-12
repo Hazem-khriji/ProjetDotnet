@@ -1,4 +1,4 @@
-﻿using ProjetDotnet.DTOs;
+﻿﻿using ProjetDotnet.DTOs;
 using ProjetDotnet.Enums;
 using ProjetDotnet.Interfaces.Repository;
 using ProjetDotnet.Interfaces.Services;
@@ -81,6 +81,24 @@ public class InquiryService : IInquiryService
     public async Task<int> GetPendingCountAsync()
     {
         return await _inquiryRepository.GetPendingCountAsync();
+    }
+
+    public async Task<PagedResultDto<InquiryDto>> GetInquiriesForAgentPropertiesAsync(
+        string agentId, 
+        int pageNumber, 
+        int pageSize, 
+        InquiryStatus? status = null)
+    {
+        var pagedResult = await _inquiryRepository.GetByPropertyOwnerIdAsync(
+            agentId, pageNumber, pageSize, status);
+
+        return new PagedResultDto<InquiryDto>
+        {
+            Items = pagedResult.Items.Select(MapToDto).ToList(),
+            TotalCount = pagedResult.TotalCount,
+            PageNumber = pagedResult.PageNumber,
+            PageSize = pagedResult.PageSize
+        };
     }
 
     private InquiryDto MapToDto(Inquiry inquiry)

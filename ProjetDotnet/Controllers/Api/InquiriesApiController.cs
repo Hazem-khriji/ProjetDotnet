@@ -92,6 +92,23 @@ public class InquiriesApiController : ControllerBase
         var count = await _inquiryService.GetPendingCountAsync();
         return Ok(new { count });
     }
+
+    [HttpGet("my-properties")]
+    [Authorize(Roles = "Agent")]
+    public async Task<ActionResult<PagedResultDto<InquiryDto>>> GetInquiriesForMyProperties(
+        [FromQuery] InquiryStatus? status,
+        [FromQuery] int pageNumber = 1,
+        [FromQuery] int pageSize = 10)
+    {
+        var user = await _userManager.GetUserAsync(User);
+        if (user == null)
+            return Unauthorized();
+
+        var result = await _inquiryService.GetInquiriesForAgentPropertiesAsync(
+            user.Id, pageNumber, pageSize, status);
+        
+        return Ok(result);
+    }
 }
 
 public class UpdateInquiryStatusDto

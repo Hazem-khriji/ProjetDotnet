@@ -1,10 +1,11 @@
-﻿﻿import React, { useState } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import AddPropertyModal from '../components/AddPropertyModal';
 import PropertyFilters from '../components/PropertyFilters';
 import PropertyGrid from '../components/PropertyGrid';
-import { API_ENDPOINTS } from '../lib/api';
+import Pagination from '../components/Pagination';
+import { API_ENDPOINTS, propertyService } from '../lib/api';
 
 const Properties = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -13,6 +14,16 @@ const Properties = () => {
   const [minPrice, setMinPrice] = useState('');
   const [maxPrice, setMaxPrice] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
+  
+  const [properties, setProperties] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [pagination, setPagination] = useState({
+    pageNumber: 1,
+    pageSize: 12,
+    totalCount: 0,
+    totalPages: 0,
+  });
   
   const [formData, setFormData] = useState({
     title: '',
@@ -30,51 +41,76 @@ const Properties = () => {
   
   const [propertyImages, setPropertyImages] = useState([]);
   
-  const properties = [
-    {
-      id: 1,
-      title: 'Luxury Family Villa',
-      address: '456 Oak Avenue, Suburbia, NY 10002',
-      price: '$750,000',
-      area: '220 m²',
-      type: 'Villa',
-      isFeatured: true,
-      image: null,
-    },
-    {
-      id: 2,
-      title: 'Modern Downtown Apartment',
-      address: '123 Main Street, Downtown, NY 10001',
-      price: '$450,000',
-      area: '85.5 m²',
-      type: 'Apartment',
-      isFeatured: true,
-      image: null,
-    },
-    {
-      id: 3,
-      title: 'Commercial Office Space',
-      address: '321 Business Blvd, Financial District, NY 10004',
-      price: '$3,500',
-      area: '150 m²',
-      type: 'Commercial',
-      isFeatured: false,
-      image: null,
-    },
-    {
-      id: 4,
-      title: 'Cozy Studio Apartment',
-      address: '789 Pine Street, Midtown, NY 10003',
-      price: '$1,800',
-      area: '45 m²',
-      type: 'Apartment',
-      isFeatured: false,
-      image: null,
-    },
-  ];
+  const fetchProperties = async () => {
+    setLoading(true);
+    setError(null);
+    
+    try {
+      const params = {
+        pageNumber: pagination.pageNumber,
+        pageSize: pagination.pageSize,
+      };
+      
+      if (searchTerm && searchTerm.trim()) {
+        params.searchTerm = searchTerm.trim();
+      }
+      
+      if (propertyType !== 'all') {
+        const typeMap = {
+          'apartment': 0,
+          'house': 1,
+          'villa': 2,
+          'land': 3,
+          'commercial': 4,
+        };
+        params.type = typeMap[propertyType.toLowerCase()];
+      }
+      
+      if (transactionType !== 'all') {
+        const transactionMap = {
+          'sale': 0,
+          'rent': 1,
+        };
+        params.transaction = transactionMap[transactionType.toLowerCase()];
+      }
+      
+      if (minPrice && !isNaN(parseFloat(minPrice))) {
+        params.minPrice = parseFloat(minPrice);
+      }
+      if (maxPrice && !isNaN(parseFloat(maxPrice))) {
+        params.maxPrice = parseFloat(maxPrice);
+      }
+      
+      const result = await propertyService.getProperties(params);
+      
+      setProperties(result.items || []);
+      setPagination({
+        pageNumber: result.pageNumber,
+        pageSize: result.pageSize,
+        totalCount: result.totalCount,
+        totalPages: result.totalPages,
+      });
+    } catch (err) {
+      console.error('Error fetching properties:', err);
+      setError(err.message || 'Failed to fetch properties');
+      setProperties([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+  
+  useEffect(() => {
+    fetchProperties();
+  }, [pagination.pageNumber]); 
 
   const handleSearch = () => {
-    console.log('Searching with:', { searchTerm, propertyType, transactionType, minPrice, maxPrice });
+    setPagination(prev => ({ ...prev, pageNumber: 1 }));
+    fetchProperties();
+  };
+
+  const handlePageChange = (page) => {
+    setPagination(prev => ({ ...prev, pageNumber: page }));
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const handleInputChange = (field, value) => {
@@ -116,7 +152,7 @@ const Properties = () => {
       
       const response = await fetch(API_ENDPOINTS.PROPERTIES.API, {
         method: 'POST',
-        credentials: 'include', // Use cookie-based auth instead of Bearer token
+        credentials: 'include',
         body: formDataToSend
       });
 
@@ -125,7 +161,6 @@ const Properties = () => {
           throw new Error('You must be logged in as an Admin or Agent to add properties');
         }
         
-        // Try to parse error message from response
         const contentType = response.headers.get('content-type');
         if (contentType && contentType.includes('application/json')) {
           const error = await response.json();
@@ -156,6 +191,8 @@ const Properties = () => {
       setPropertyImages([]);
       setIsModalOpen(false);
       
+
+      await fetchProperties();
       
     } catch (error) {
       console.error('Error creating property:', error);
@@ -206,7 +243,25 @@ const Properties = () => {
         />
 
         {/* Properties Grid */}
-        <PropertyGrid properties={properties} />
+        <PropertyGrid 
+          properties={properties} 
+          loading={loading}
+          error={error}
+        />
+        
+        {/* Results Summary */}
+        {!loading && !error && properties.length > 0 && (
+          <div className="mt-6 text-center text-gray-600">
+            Showing {((pagination.pageNumber - 1) * pagination.pageSize) + 1} - {Math.min(pagination.pageNumber * pagination.pageSize, pagination.totalCount)} of {pagination.totalCount} properties
+          </div>
+        )}
+        
+        {/* Pagination */}
+        <Pagination 
+          currentPage={pagination.pageNumber}
+          totalPages={pagination.totalPages}
+          onPageChange={handlePageChange}
+        />
       </div>
     </div>
     <Footer />
