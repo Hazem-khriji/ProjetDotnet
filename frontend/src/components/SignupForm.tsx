@@ -1,4 +1,4 @@
-﻿﻿import { Button } from "@/components/ui/button"
+﻿import { Button } from "@/components/ui/button"
 import {
     Card,
     CardContent,
@@ -15,10 +15,11 @@ import {
 import { Input } from "@/components/ui/input"
 import { Link, useNavigate } from "react-router-dom"
 import { useState } from "react"
-import { authService } from "@/lib/api"
+import { useAuthStore } from "@/stores/authStore"
 
 export default function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
     const navigate = useNavigate();
+    const { register, isLoading } = useAuthStore();
     const [formData, setFormData] = useState({
         firstName: '',
         lastName: '',
@@ -28,7 +29,6 @@ export default function SignupForm({ ...props }: React.ComponentProps<typeof Car
         confirmPassword: ''
     });
     const [errors, setErrors] = useState<string[]>([]);
-    const [loading, setLoading] = useState(false);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setFormData({
@@ -40,24 +40,14 @@ export default function SignupForm({ ...props }: React.ComponentProps<typeof Car
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setErrors([]);
-        setLoading(true);
 
-        try {
-            const data = await authService.register(formData);
+        const result = await register(formData);
 
-            if (data.success) {
-                // Registration successful, redirect to home or dashboard
-                console.log('Registration successful:', data.user);
-                navigate('/'); // Redirect to home page
-            } else {
-                // Show errors
-                setErrors(data.errors || [data.message]);
-            }
-        } catch (error) {
-            console.error('Registration error:', error);
-            setErrors(['An error occurred during registration. Please try again.']);
-        } finally {
-            setLoading(false);
+        if (result.success) {
+            console.log('Registration successful');
+            navigate('/properties');
+        } else {
+            setErrors(result.errors || [result.message || 'Registration failed']);
         }
     };
 
@@ -163,8 +153,8 @@ export default function SignupForm({ ...props }: React.ComponentProps<typeof Car
                         
                         <FieldGroup>
                             <Field>
-                                <Button type="submit" disabled={loading}>
-                                    {loading ? 'Creating Account...' : 'Create Account'}
+                                <Button type="submit" disabled={isLoading}>
+                                    {isLoading ? 'Creating Account...' : 'Create Account'}
                                 </Button>
                                 <FieldDescription className="px-6 text-center">
                                     Already have an account? <Link to="/signin">Sign in</Link>

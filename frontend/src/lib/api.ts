@@ -1,4 +1,4 @@
-﻿const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5009';
+﻿﻿const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5009';
 
 export const API_ENDPOINTS = {
     AUTH: {
@@ -11,6 +11,7 @@ export const API_ENDPOINTS = {
     PROPERTIES: {
         BASE: `${API_BASE_URL}/api/properties`,
         BY_ID: (id: string) => `${API_BASE_URL}/api/properties/${id}`,
+        API: `${API_BASE_URL}/api/propertiesapi`,
     },
     USERS: {
         BASE: `${API_BASE_URL}/api/users`,

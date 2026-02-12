@@ -1,9 +1,10 @@
-﻿import React, { useState } from 'react';
+﻿﻿import React, { useState } from 'react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import AddPropertyModal from '../components/AddPropertyModal';
 import PropertyFilters from '../components/PropertyFilters';
 import PropertyGrid from '../components/PropertyGrid';
+import { API_ENDPOINTS } from '../lib/api';
 
 const Properties = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -12,8 +13,7 @@ const Properties = () => {
   const [minPrice, setMinPrice] = useState('');
   const [maxPrice, setMaxPrice] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
-
-  // Form state for new property
+  
   const [formData, setFormData] = useState({
     title: '',
     description: '',
@@ -27,8 +27,9 @@ const Properties = () => {
     bathrooms: '',
     yearBuilt: ''
   });
-
-  // Sample property data
+  
+  const [propertyImages, setPropertyImages] = useState([]);
+  
   const properties = [
     {
       id: 1,
@@ -73,7 +74,6 @@ const Properties = () => {
   ];
 
   const handleSearch = () => {
-    // Add search logic here
     console.log('Searching with:', { searchTerm, propertyType, transactionType, minPrice, maxPrice });
   };
 
@@ -81,34 +81,86 @@ const Properties = () => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
-  const handleSubmitProperty = (e) => {
+  const handleImagesChange = (images) => {
+    setPropertyImages(images);
+  };
+
+  const handleSubmitProperty = async (e) => {
     e.preventDefault();
     
-    // Validate required fields
     if (!formData.title || !formData.description || !formData.price || 
         !formData.type || !formData.transaction || !formData.address || !formData.area) {
       alert('Please fill in all required fields');
       return;
     }
 
-    // Add API call logic here
-    console.log('Submitting property:', formData);
-    
-    // Reset form and close modal
-    setFormData({
-      title: '',
-      description: '',
-      price: '',
-      type: '',
-      transaction: '',
-      address: '',
-      city: '',
-      area: '',
-      bedrooms: '',
-      bathrooms: '',
-      yearBuilt: ''
-    });
-    setIsModalOpen(false);
+    try {
+      const formDataToSend = new FormData();
+      
+      formDataToSend.append('title', formData.title);
+      formDataToSend.append('description', formData.description);
+      formDataToSend.append('price', formData.price);
+      formDataToSend.append('type', formData.type);
+      formDataToSend.append('transaction', formData.transaction);
+      formDataToSend.append('address', formData.address);
+      formDataToSend.append('area', formData.area);
+      
+      if (formData.city) formDataToSend.append('city', formData.city);
+      if (formData.bedrooms) formDataToSend.append('bedrooms', formData.bedrooms);
+      if (formData.bathrooms) formDataToSend.append('bathrooms', formData.bathrooms);
+      if (formData.yearBuilt) formDataToSend.append('yearBuilt', formData.yearBuilt);
+      
+      propertyImages.forEach((image, index) => {
+        formDataToSend.append('images', image);
+      });
+      
+      const response = await fetch(API_ENDPOINTS.PROPERTIES.API, {
+        method: 'POST',
+        credentials: 'include', // Use cookie-based auth instead of Bearer token
+        body: formDataToSend
+      });
+
+      if (!response.ok) {
+        if (response.status === 401) {
+          throw new Error('You must be logged in as an Admin or Agent to add properties');
+        }
+        
+        // Try to parse error message from response
+        const contentType = response.headers.get('content-type');
+        if (contentType && contentType.includes('application/json')) {
+          const error = await response.json();
+          throw new Error(error.error || error.message || 'Failed to create property');
+        } else {
+          throw new Error(`Failed to create property (Status: ${response.status})`);
+        }
+      }
+
+      const result = await response.json();
+      console.log('Property created successfully:', result);
+      
+      alert('Property created successfully!');
+      
+      setFormData({
+        title: '',
+        description: '',
+        price: '',
+        type: '',
+        transaction: '',
+        address: '',
+        city: '',
+        area: '',
+        bedrooms: '',
+        bathrooms: '',
+        yearBuilt: ''
+      });
+      setPropertyImages([]);
+      setIsModalOpen(false);
+      
+      
+    } catch (error) {
+      console.error('Error creating property:', error);
+      alert(`Error: ${error.message}`);
+    }
   };
 
   return (
@@ -134,6 +186,8 @@ const Properties = () => {
             formData={formData}
             onInputChange={handleInputChange}
             onSubmit={handleSubmitProperty}
+            images={propertyImages}
+            onImagesChange={handleImagesChange}
           />
         </div>
 

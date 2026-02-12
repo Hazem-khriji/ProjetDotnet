@@ -62,7 +62,7 @@ public class PropertiesApiController : ControllerBase
 
     [HttpPost]
     [Authorize(Roles = "Admin,Agent")]
-    public async Task<ActionResult<PropertyDto>> CreateProperty([FromBody] CreatePropertyDto dto)
+    public async Task<ActionResult<PropertyDto>> CreateProperty([FromForm] CreatePropertyDto dto)
     {
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
@@ -74,7 +74,7 @@ public class PropertiesApiController : ControllerBase
         try
         {
             var property = await _propertyService.CreateAsync(dto, user);
-            return CreatedAtAction(nameof(GetProperty), new { id = property.Id }, property);
+            return Ok(property);
         }
         catch (Exception ex)
         {

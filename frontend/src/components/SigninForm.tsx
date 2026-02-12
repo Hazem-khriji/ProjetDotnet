@@ -1,4 +1,4 @@
-﻿﻿import { cn } from "@/lib/utils"
+﻿import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import {
     Card,
@@ -16,20 +16,20 @@ import {
 import { Input } from "@/components/ui/input"
 import { Link, useNavigate } from "react-router-dom"
 import { useState } from "react"
-import { authService } from "@/lib/api"
+import { useAuthStore } from "@/stores/authStore"
 
 export default function SigninForm({
                               className,
                               ...props
                           }: React.ComponentProps<"div">) {
     const navigate = useNavigate();
+    const { login, isLoading } = useAuthStore();
     const [formData, setFormData] = useState({
         email: '',
         password: '',
         rememberMe: false
     });
     const [errors, setErrors] = useState<string[]>([]);
-    const [loading, setLoading] = useState(false);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value, type, checked } = e.target;
@@ -42,27 +42,20 @@ export default function SigninForm({
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setErrors([]);
-        setLoading(true);
 
-        try {
-            const data = await authService.login(formData);
+        const result = await login(formData.email, formData.password, formData.rememberMe);
 
-            if (data.success) {
-                console.log('Login successful:', data.user);
-                // Redirect based on user role
-                if (data.user?.roles?.includes('Admin')) {
-                    navigate('/admin');
-                } else {
-                    navigate('/');
-                }
+        if (result.success) {
+            console.log('Login successful');
+            // Redirect based on user role
+            const currentUser = useAuthStore.getState().user;
+            if (currentUser?.roles?.includes('Admin')) {
+                navigate('/admin');
             } else {
-                setErrors(data.errors || [data.message]);
+                navigate('/');
             }
-        } catch (error) {
-            console.error('Login error:', error);
-            setErrors(['An error occurred during login. Please try again.']);
-        } finally {
-            setLoading(false);
+        } else {
+            setErrors(result.errors || [result.message || 'Login failed']);
         }
     };
 
@@ -133,8 +126,8 @@ export default function SigninForm({
                                 </div>
                             </Field>
                             <Field>
-                                <Button type="submit" disabled={loading}>
-                                    {loading ? 'Logging in...' : 'Login'}
+                                <Button type="submit" disabled={isLoading}>
+                                    {isLoading ? 'Logging in...' : 'Login'}
                                 </Button>
                                 {/*<Button variant="outline" type="button">*/}
                                 {/*    Login with Google*/}

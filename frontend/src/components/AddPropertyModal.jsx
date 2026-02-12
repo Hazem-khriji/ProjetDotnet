@@ -1,14 +1,48 @@
-﻿﻿﻿import React from 'react';
-import { Plus } from 'lucide-react';
+﻿import React, { useState } from 'react';
+import { Plus, Upload, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogTrigger } from '@/components/ui/dialog';
 
-const AddPropertyModal = ({ isOpen, onOpenChange, formData, onInputChange, onSubmit }) => {
+const AddPropertyModal = ({ isOpen, onOpenChange, formData, onInputChange, onSubmit, images, onImagesChange }) => {
+  const [imagePreviews, setImagePreviews] = useState([]);
+
+  const handleImageChange = (e) => {
+    const files = Array.from(e.target.files || []);
+    
+    if (files.length > 0) {
+      const previews = files.map(file => ({
+        file,
+        url: URL.createObjectURL(file),
+        name: file.name
+      }));
+      
+      setImagePreviews(prev => [...prev, ...previews]);
+      onImagesChange([...(images || []), ...files]);
+    }
+  };
+
+  const removeImage = (index) => {
+    const newPreviews = imagePreviews.filter((_, i) => i !== index);
+    const newImages = (images || []).filter((_, i) => i !== index);
+    
+    URL.revokeObjectURL(imagePreviews[index].url);
+    
+    setImagePreviews(newPreviews);
+    onImagesChange(newImages);
+  };
+
+  const handleDialogChange = (open) => {
+    if (!open) {
+      imagePreviews.forEach(preview => URL.revokeObjectURL(preview.url));
+      setImagePreviews([]);
+    }
+    onOpenChange(open);
+  };
   return (
-    <Dialog open={isOpen} onOpenChange={onOpenChange}>
+    <Dialog open={isOpen} onOpenChange={handleDialogChange}>
       <DialogTrigger asChild>
         <Button className="bg-blue-600 hover:bg-blue-700 text-white">
           <Plus className="w-4 h-4 mr-2" />
@@ -196,6 +230,59 @@ const AddPropertyModal = ({ isOpen, onOpenChange, formData, onInputChange, onSub
                 max={2050}
                 className="bg-white border-gray-200"
               />
+            </div>
+          </div>
+
+          {/* Image Upload Section */}
+          <div>
+            <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
+              Property Images
+            </label>
+            <div className="space-y-3">
+              {/* Upload Button */}
+              <div className="flex items-center gap-2">
+                <Input
+                  id="image-upload"
+                  type="file"
+                  accept="image/*"
+                  multiple
+                  onChange={handleImageChange}
+                  className="hidden"
+                />
+                <label
+                  htmlFor="image-upload"
+                  className="flex items-center gap-2 px-4 py-2 bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+                >
+                  <Upload className="w-4 h-4" />
+                  <span className="text-sm">Upload Images</span>
+                </label>
+                <span className="text-xs text-gray-500">
+                  {imagePreviews.length > 0 && `${imagePreviews.length} image(s) selected`}
+                </span>
+              </div>
+
+              {/* Image Previews */}
+              {imagePreviews.length > 0 && (
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                  {imagePreviews.map((preview, index) => (
+                    <div key={index} className="relative group">
+                      <img
+                        src={preview.url}
+                        alt={`Preview ${index + 1}`}
+                        className="w-full h-32 object-cover rounded-md border border-gray-300 dark:border-gray-600"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => removeImage(index)}
+                        className="absolute top-1 right-1 p-1 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-600"
+                      >
+                        <X className="w-4 h-4" />
+                      </button>
+                      <p className="text-xs text-gray-500 mt-1 truncate">{preview.name}</p>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
 

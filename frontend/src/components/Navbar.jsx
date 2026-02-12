@@ -1,9 +1,21 @@
-﻿import { useState } from 'react'
+﻿import { useState, useEffect } from 'react'
 import logo from '/assets/logo.svg'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
+import { useAuthStore } from '../stores/authStore'
 
 const Navbar = () => {
   const [showMobileMenu, setShowMobileMenu] = useState(false)
+  const { user, isAuthenticated, logout, checkAuth } = useAuthStore()
+  const navigate = useNavigate()
+
+  useEffect(() => {
+    checkAuth()
+  }, [checkAuth])
+
+  const handleLogout = async () => {
+    await logout()
+    navigate('/')
+  }
 
   return (
     <div className="absolute top-0 left-0 w-full z-10">
@@ -15,7 +27,30 @@ const Navbar = () => {
           <Link to="/properties" className="cursor-pointer hover:text-gray-400">Properties</Link>
           <a href="#Testimonials" className="cursor-pointer hover:text-gray-400">Testimonials</a>
         </ul>
-        <Link to="/signup"><button className="hidden md:block bg-white px-8 py-2 rounded-full cursor-pointer">Sign up</button></Link>
+        {isAuthenticated && user ? (
+          <div className="hidden md:flex items-center gap-4 text-white">
+            <span className="text-sm">Welcome, {user.firstName}!</span>
+            <button 
+              onClick={handleLogout}
+              className="bg-white text-gray-900 px-6 py-2 rounded-full cursor-pointer hover:bg-gray-200"
+            >
+              Logout
+            </button>
+          </div>
+        ) : (
+          <div className="hidden md:flex gap-3">
+            <Link to="/signin">
+              <button className="bg-transparent border border-white text-white px-6 py-2 rounded-full cursor-pointer hover:bg-white hover:text-gray-900">
+                Sign in
+              </button>
+            </Link>
+            <Link to="/signup">
+              <button className="bg-white text-gray-900 px-6 py-2 rounded-full cursor-pointer hover:bg-gray-200">
+                Sign up
+              </button>
+            </Link>
+          </div>
+        )}
         
       </div>
       <div className={`md:hidden ${showMobileMenu ? 'fixed w-full' : 'h-0 w-0'} right-0 top-0 bottom-0 overflow-hidden bg-white transition-all`}>

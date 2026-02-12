@@ -248,14 +248,52 @@ public class AuthController : ControllerBase
     }
 
     [HttpGet("check-auth")]
-    public ActionResult<AuthResponseDto> CheckAuth()
+    public async Task<ActionResult<AuthResponseDto>> CheckAuth()
     {
         var isAuthenticated = User.Identity?.IsAuthenticated ?? false;
         
+        if (!isAuthenticated)
+        {
+            return Ok(new AuthResponseDto
+            {
+                Success = false,
+                Message = "User is not authenticated"
+            });
+        }
+
+        var user = await _userManager.GetUserAsync(User);
+        if (user == null)
+        {
+            return Ok(new AuthResponseDto
+            {
+                Success = false,
+                Message = "User not found"
+            });
+        }
+
+        var roles = await _userManager.GetRolesAsync(user);
+        
+        var userDto = new UserDto
+        {
+            Id = user.Id,
+            Email = user.Email ?? string.Empty,
+            FirstName = user.FirstName,
+            LastName = user.LastName,
+            FullName = user.FullName,
+            PhoneNumber = user.PhoneNumber ?? string.Empty,
+            Address = user.Address,
+            ProfileImageUrl = user.ProfileImageUrl,
+            IsActive = user.IsActive,
+            CreatedAt = user.CreatedAt,
+            LastLoginAt = user.LastLoginAt,
+            Roles = roles.ToList()
+        };
+
         return Ok(new AuthResponseDto
         {
-            Success = isAuthenticated,
-            Message = isAuthenticated ? "User is authenticated" : "User is not authenticated"
+            Success = true,
+            Message = "User is authenticated",
+            User = userDto
         });
     }
 }

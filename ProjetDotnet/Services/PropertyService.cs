@@ -57,8 +57,44 @@ public class PropertyService : IPropertyService
             Bathrooms = dto.Bathrooms,
             YearBuilt = dto.YearBuilt,
             Owner = user,
-            CreatedAt = DateTime.UtcNow
+            CreatedAt = DateTime.UtcNow,
+            Images = new List<PropertyImage>()
         };
+
+        // Handle image uploads
+        if (dto.Images != null && dto.Images.Any())
+        {
+            var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads", "properties");
+            if (!Directory.Exists(uploadsFolder))
+            {
+                Directory.CreateDirectory(uploadsFolder);
+            }
+
+            for (int i = 0; i < dto.Images.Count; i++)
+            {
+                var image = dto.Images[i];
+                if (image.Length > 0)
+                {
+                    var uniqueFileName = $"{Guid.NewGuid()}_{image.FileName}";
+                    var filePath = Path.Combine(uploadsFolder, uniqueFileName);
+
+                    using (var fileStream = new FileStream(filePath, FileMode.Create))
+                    {
+                        await image.CopyToAsync(fileStream);
+                    }
+
+                    var propertyImage = new PropertyImage
+                    {
+                        ImageUrl = $"/uploads/properties/{uniqueFileName}",
+                        IsPrimary = i == 0, // First image is primary
+                        DisplayOrder = i,
+                        UploadedAt = DateTime.UtcNow
+                    };
+
+                    property.Images.Add(propertyImage);
+                }
+            }
+        }
 
         var created = await _propertyRepository.AddAsync(property);
         return MapToDto(created);
@@ -158,8 +194,22 @@ public class PropertyService : IPropertyService
             ViewCount = property.ViewCount,
             IsFeatured = property.IsFeatured,
             CreatedAt = property.CreatedAt,
-            Owner = property.Owner,
-            Images = property.Images?.ToList() ?? new List<PropertyImage>(),
+            Owner = property.Owner != null ? new PropertyOwnerDto
+            {
+                Id = property.Owner.Id,
+                FirstName = property.Owner.FirstName,
+                LastName = property.Owner.LastName,
+                FullName = property.Owner.FullName,
+                PhoneNumber = property.Owner.PhoneNumber,
+                Email = property.Owner.Email
+            } : null,
+            Images = property.Images?.Select(img => new PropertyImageDto
+            {
+                Id = img.Id,
+                ImageUrl = img.ImageUrl,
+                IsPrimary = img.IsPrimary,
+                DisplayOrder = img.DisplayOrder
+            }).ToList() ?? new List<PropertyImageDto>(),
             PrimaryImageUrl = property.Images?.FirstOrDefault(i => i.IsPrimary)?.ImageUrl ?? ""
         };
     }
