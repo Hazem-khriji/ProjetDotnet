@@ -1,4 +1,4 @@
-﻿﻿namespace ProjetDotnet.DTOs;
+﻿namespace ProjetDotnet.DTOs;
 using System.ComponentModel.DataAnnotations;
 using ProjetDotnet.Enums;
 
@@ -41,4 +41,7 @@ public class CreatePropertyDto
     
     [Range(1800, 2050)]
     public int? YearBuilt { get; set; }
+    
+    // Property images
+    public List<IFormFile>? Images { get; set; }
 }

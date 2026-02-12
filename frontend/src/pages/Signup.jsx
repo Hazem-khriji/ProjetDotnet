@@ -14,7 +14,7 @@ const Signup = () => {
             <div className="min-h-screen mb-4 bg-cover bg-center flex items-center w-full overflow-hidden"
                  style={{backgroundImage: `url('${headerImg}')`}} id="Header">
                 <Navbar />
-                <div className="flex min-h-svh w-full items-center justify-center p-6 md:p-10">
+                <div className="flex min-h-svh w-full items-center justify-center p-6 md:p-10 mt-10">
                     <div className="w-full max-w-sm">
                         <SignupForm />
                     </div>

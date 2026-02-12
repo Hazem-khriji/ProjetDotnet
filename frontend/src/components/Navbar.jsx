@@ -12,7 +12,7 @@ const Navbar = () => {
         <ul className="hidden md:flex gap-7 text-white">
           <a href="#Header" className="cursor-pointer hover:text-gray-400">Home</a>
           <a href="#About" className="cursor-pointer hover:text-gray-400">About</a>
-          <a href="#Projects" className="cursor-pointer hover:text-gray-400">Properties</a>
+          <Link to="/properties" className="cursor-pointer hover:text-gray-400">Properties</Link>
           <a href="#Testimonials" className="cursor-pointer hover:text-gray-400">Testimonials</a>
         </ul>
         <Link to="/signup"><button className="hidden md:block bg-white px-8 py-2 rounded-full cursor-pointer">Sign up</button></Link>

@@ -1,4 +1,4 @@
-﻿﻿namespace ProjetDotnet.DTOs;
+﻿namespace ProjetDotnet.DTOs;
 using ProjetDotnet.Enums;
 using System.ComponentModel.DataAnnotations;
 
@@ -46,4 +46,8 @@ public class UpdatePropertyDto
     public int? YearBuilt { get; set; }
     
     public bool IsFeatured { get; set; }
+    
+    public List<IFormFile>? Images { get; set; }
+    
+    public List<int>? ImagesToRemove { get; set; }
 }
