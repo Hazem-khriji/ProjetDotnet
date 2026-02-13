@@ -1,4 +1,4 @@
-﻿const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5009';
+﻿﻿const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5009';
 
 export const API_ENDPOINTS = {
     AUTH: {
@@ -20,6 +20,10 @@ export const API_ENDPOINTS = {
     INQUIRIES: {
         BASE: `${API_BASE_URL}/api/inquiriesapi`,
         BY_ID: (id: string) => `${API_BASE_URL}/api/inquiriesapi/${id}`,
+        MY_PROPERTIES: `${API_BASE_URL}/api/inquiriesapi/my-properties`,
+    },
+    STATISTICS: {
+        DASHBOARD: `${API_BASE_URL}/api/statisticsapi/dashboard`,
     },
 };
 
@@ -216,7 +220,47 @@ export const inquiryService = {
         
         return response.json();
     },
+
+    getMyPropertyInquiries: async (params?: {
+        status?: number;
+        pageNumber?: number;
+        pageSize?: number;
+    }) => {
+        const queryParams = new URLSearchParams();
+        
+        if (params) {
+            if (params.status !== undefined && params.status !== null) queryParams.append('status', params.status.toString());
+            if (params.pageNumber) queryParams.append('pageNumber', params.pageNumber.toString());
+            if (params.pageSize) queryParams.append('pageSize', params.pageSize.toString());
+        }
+        
+        const url = `${API_ENDPOINTS.INQUIRIES.MY_PROPERTIES}${queryParams.toString() ? '?' + queryParams.toString() : ''}`;
+        const response = await fetch(url, getFetchOptions());
+        
+        if (!response.ok) {
+            throw new Error('Failed to fetch inquiries');
+        }
+        
+        return response.json();
+    },
 };
+
+export const statisticsService = {
+    getDashboardStatistics: async () => {
+        const response = await fetch(
+            API_ENDPOINTS.STATISTICS.DASHBOARD,
+            getFetchOptions()
+        );
+        
+        if (!response.ok) {
+            throw new Error('Failed to fetch statistics');
+        }
+        
+        return response.json();
+    },
+};
+
+
 
 
 

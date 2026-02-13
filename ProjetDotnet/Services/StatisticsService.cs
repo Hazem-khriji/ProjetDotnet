@@ -1,4 +1,4 @@
-﻿﻿namespace ProjetDotnet.Services;
+﻿﻿﻿namespace ProjetDotnet.Services;
 using Microsoft.EntityFrameworkCore;
 using ProjetDotnet.Data;
 using ProjetDotnet.DTOs;
@@ -79,19 +79,33 @@ public class StatisticsService : IStatisticsService
         {
             var sixMonthsAgo = DateTime.UtcNow.AddMonths(-6);
             
-            var stats = await _context.Properties
+            // First, get the data in a form that EF Core can translate
+            var rawStats = await _context.Properties
                 .Where(p => p.CreatedAt >= sixMonthsAgo)
                 .GroupBy(p => new { p.CreatedAt.Year, p.CreatedAt.Month })
-                .Select(g => new MonthlyStatistic
+                .Select(g => new 
                 {
-                    Month = $"{g.Key.Year}-{g.Key.Month:D2}",
+                    Year = g.Key.Year,
+                    Month = g.Key.Month,
                     PropertiesAdded = g.Count(),
                     PropertiesSold = g.Count(p => p.Status == PropertyStatus.Sold),
                     TotalViews = g.Sum(p => p.ViewCount),
                     TotalValue = g.Sum(p => p.Price)
                 })
-                .OrderBy(s => s.Month)
                 .ToListAsync();
+
+            // Then convert to MonthlyStatistic with proper formatting on the client side
+            var stats = rawStats
+                .Select(s => new MonthlyStatistic
+                {
+                    Month = $"{s.Year}-{s.Month:D2}",
+                    PropertiesAdded = s.PropertiesAdded,
+                    PropertiesSold = s.PropertiesSold,
+                    TotalViews = s.TotalViews,
+                    TotalValue = s.TotalValue
+                })
+                .OrderBy(s => s.Month)
+                .ToList();
 
             return stats;
         }
