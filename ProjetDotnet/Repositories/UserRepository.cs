@@ -1,4 +1,4 @@
-﻿﻿using Microsoft.AspNetCore.Identity;
+﻿﻿﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using ProjetDotnet.Data;
 using ProjetDotnet.DTOs;
@@ -89,6 +89,14 @@ public class UserRepository : IUserRepository
         if (filter.CreatedTo.HasValue)
         {
             query = query.Where(u => u.CreatedAt <= filter.CreatedTo.Value);
+        }
+
+        // Filter by role
+        if (!string.IsNullOrWhiteSpace(filter.Role))
+        {
+            var usersInRole = await _userManager.GetUsersInRoleAsync(filter.Role);
+            var userIdsInRole = usersInRole.Select(u => u.Id).ToList();
+            query = query.Where(u => userIdsInRole.Contains(u.Id));
         }
 
         // Apply sorting

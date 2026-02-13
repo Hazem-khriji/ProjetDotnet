@@ -1,4 +1,4 @@
-﻿﻿const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5009';
+﻿const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5009';
 
 export const API_ENDPOINTS = {
     AUTH: {
@@ -14,8 +14,12 @@ export const API_ENDPOINTS = {
         API: `${API_BASE_URL}/api/propertiesapi`,
     },
     USERS: {
-        BASE: `${API_BASE_URL}/api/users`,
-        BY_ID: (id: string) => `${API_BASE_URL}/api/users/${id}`,
+        BASE: `${API_BASE_URL}/api/usersapi`,
+        BY_ID: (id: string) => `${API_BASE_URL}/api/usersapi/${id}`,
+        STATISTICS: `${API_BASE_URL}/api/usersapi/statistics`,
+        RECENT: `${API_BASE_URL}/api/usersapi/recent`,
+        STATUS: (id: string) => `${API_BASE_URL}/api/usersapi/${id}/status`,
+        ROLE: (id: string) => `${API_BASE_URL}/api/usersapi/${id}/role`,
     },
     INQUIRIES: {
         BASE: `${API_BASE_URL}/api/inquiriesapi`,
@@ -160,6 +164,89 @@ export const propertyService = {
         
         return response.json();
     },
+
+    createProperty: async (data: FormData) => {
+        const response = await fetch(
+            API_ENDPOINTS.PROPERTIES.API,
+            getFetchOptions({
+                method: 'POST',
+                headers: {}, // Let browser set Content-Type for FormData
+                body: data,
+            })
+        );
+        
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.error || 'Failed to create property');
+        }
+        
+        return response.json();
+    },
+
+    updateProperty: async (id: number, data: {
+        title?: string;
+        description?: string;
+        price?: number;
+        address?: string;
+        city?: string;
+        state?: string;
+        zipCode?: string;
+        country?: string;
+        bedrooms?: number;
+        bathrooms?: number;
+        area?: number;
+        yearBuilt?: number;
+        type?: number;
+        status?: number;
+        transaction?: number;
+        isFeatured?: boolean;
+    }) => {
+        const response = await fetch(
+            `${API_ENDPOINTS.PROPERTIES.API}/${id}`,
+            getFetchOptions({
+                method: 'PUT',
+                body: JSON.stringify(data),
+            })
+        );
+        
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.error || 'Failed to update property');
+        }
+        
+        return response.json();
+    },
+
+    deleteProperty: async (id: number) => {
+        const response = await fetch(
+            `${API_ENDPOINTS.PROPERTIES.API}/${id}`,
+            getFetchOptions({
+                method: 'DELETE',
+            })
+        );
+        
+        if (!response.ok) {
+            throw new Error('Failed to delete property');
+        }
+        
+        return true;
+    },
+
+    updatePropertyStatus: async (id: number, status: number) => {
+        const response = await fetch(
+            `${API_ENDPOINTS.PROPERTIES.API}/${id}/status`,
+            getFetchOptions({
+                method: 'PUT',
+                body: JSON.stringify({ status }),
+            })
+        );
+        
+        if (!response.ok) {
+            throw new Error('Failed to update property status');
+        }
+        
+        return true;
+    },
 };
 
 export const inquiryService = {
@@ -254,6 +341,174 @@ export const statisticsService = {
         
         if (!response.ok) {
             throw new Error('Failed to fetch statistics');
+        }
+        
+        return response.json();
+    },
+};
+
+export const userService = {
+    getUsers: async (params?: {
+        searchTerm?: string;
+        role?: string;
+        isActive?: boolean;
+        pageNumber?: number;
+        pageSize?: number;
+    }) => {
+        const queryParams = new URLSearchParams();
+        
+        if (params) {
+            if (params.searchTerm) queryParams.append('searchTerm', params.searchTerm);
+            if (params.role) queryParams.append('role', params.role);
+            if (params.isActive !== undefined && params.isActive !== null) queryParams.append('isActive', params.isActive.toString());
+            if (params.pageNumber) queryParams.append('pageNumber', params.pageNumber.toString());
+            if (params.pageSize) queryParams.append('pageSize', params.pageSize.toString());
+        }
+        
+        const url = `${API_ENDPOINTS.USERS.BASE}${queryParams.toString() ? '?' + queryParams.toString() : ''}`;
+        const response = await fetch(url, getFetchOptions());
+        
+        if (!response.ok) {
+            throw new Error('Failed to fetch users');
+        }
+        
+        return response.json();
+    },
+
+    getUserById: async (id: string) => {
+        const response = await fetch(
+            API_ENDPOINTS.USERS.BY_ID(id),
+            getFetchOptions()
+        );
+        
+        if (!response.ok) {
+            throw new Error('Failed to fetch user');
+        }
+        
+        return response.json();
+    },
+
+    createUser: async (data: {
+        firstName: string;
+        lastName: string;
+        email: string;
+        phoneNumber?: string;
+        address?: string;
+        password: string;
+        confirmPassword: string;
+        isActive?: boolean;
+        role?: string;
+    }) => {
+        const response = await fetch(
+            API_ENDPOINTS.USERS.BASE,
+            getFetchOptions({
+                method: 'POST',
+                body: JSON.stringify(data),
+            })
+        );
+        
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.error || 'Failed to create user');
+        }
+        
+        return response.json();
+    },
+
+    updateUser: async (id: string, data: {
+        firstName?: string;
+        lastName?: string;
+        email?: string;
+        phoneNumber?: string;
+        address?: string;
+        isActive?: boolean;
+        role?: string;
+    }) => {
+        const response = await fetch(
+            API_ENDPOINTS.USERS.BY_ID(id),
+            getFetchOptions({
+                method: 'PUT',
+                body: JSON.stringify(data),
+            })
+        );
+        
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.error || 'Failed to update user');
+        }
+        
+        return response.json();
+    },
+
+    deleteUser: async (id: string) => {
+        const response = await fetch(
+            API_ENDPOINTS.USERS.BY_ID(id),
+            getFetchOptions({
+                method: 'DELETE',
+            })
+        );
+        
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.error || 'Failed to delete user');
+        }
+        
+        return true;
+    },
+
+    updateUserStatus: async (id: string, isActive: boolean) => {
+        const response = await fetch(
+            API_ENDPOINTS.USERS.STATUS(id),
+            getFetchOptions({
+                method: 'PUT',
+                body: JSON.stringify({ isActive }),
+            })
+        );
+        
+        if (!response.ok) {
+            throw new Error('Failed to update user status');
+        }
+        
+        return true;
+    },
+
+    updateUserRole: async (id: string, role: string) => {
+        const response = await fetch(
+            API_ENDPOINTS.USERS.ROLE(id),
+            getFetchOptions({
+                method: 'PUT',
+                body: JSON.stringify({ role }),
+            })
+        );
+        
+        if (!response.ok) {
+            throw new Error('Failed to update user role');
+        }
+        
+        return true;
+    },
+
+    getStatistics: async () => {
+        const response = await fetch(
+            API_ENDPOINTS.USERS.STATISTICS,
+            getFetchOptions()
+        );
+        
+        if (!response.ok) {
+            throw new Error('Failed to fetch user statistics');
+        }
+        
+        return response.json();
+    },
+
+    getRecentUsers: async (count: number = 10) => {
+        const response = await fetch(
+            `${API_ENDPOINTS.USERS.RECENT}?count=${count}`,
+            getFetchOptions()
+        );
+        
+        if (!response.ok) {
+            throw new Error('Failed to fetch recent users');
         }
         
         return response.json();

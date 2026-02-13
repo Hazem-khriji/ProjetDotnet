@@ -29,6 +29,15 @@ public class CreatePropertyDto
     [MaxLength(100)]
     public string? City { get; set; }
     
+    [MaxLength(100)]
+    public string? State { get; set; }
+    
+    [MaxLength(20)]
+    public string? ZipCode { get; set; }
+    
+    [MaxLength(100)]
+    public string? Country { get; set; }
+    
     [Required]
     [Range(1, 10000)]
     public double Area { get; set; }
@@ -41,6 +50,10 @@ public class CreatePropertyDto
     
     [Range(1800, 2050)]
     public int? YearBuilt { get; set; }
+    
+    public bool IsFeatured { get; set; } = false;
+    
+    public PropertyStatus Status { get; set; } = PropertyStatus.Available;
     
     // Property images
     public List<IFormFile>? Images { get; set; }

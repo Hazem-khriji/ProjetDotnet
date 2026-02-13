@@ -1,4 +1,4 @@
-﻿﻿using Microsoft.AspNetCore.Identity;
+﻿﻿﻿using Microsoft.AspNetCore.Identity;
 using ProjetDotnet.DTOs;
 using ProjetDotnet.Interfaces.Repository;
 using ProjetDotnet.Interfaces.Services;
@@ -135,14 +135,18 @@ public class UserService : IUserService
 
     public async Task<bool> DeleteUserAsync(string id)
     {
-        var user = await _userManager.FindByIdAsync(id);
+        var user = await _userRepository.GetByIdAsync(id);
         if (user == null)
             return false;
-
-        // Check if user has properties - don't delete if they do
-        if (user.Properties.Any())
+        
+        if (user.Properties != null && user.Properties.Any())
         {
-            throw new Exception("Cannot delete user with associated properties");
+            throw new Exception("Cannot delete user with associated properties. Please transfer or delete their properties first.");
+        }
+        
+        if (user.Inquiries != null && user.Inquiries.Any())
+        {
+            throw new Exception("Cannot delete user with associated inquiries. Please handle their inquiries first.");
         }
 
         var result = await _userManager.DeleteAsync(user);

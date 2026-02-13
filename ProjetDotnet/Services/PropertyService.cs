@@ -1,6 +1,5 @@
-﻿﻿namespace ProjetDotnet.Services;
+﻿namespace ProjetDotnet.Services;
 
-// RealEstateAdmin.Infrastructure/Services/PropertyService.cs (Créer le dossier Services)
 using ProjetDotnet.DTOs;
 using ProjetDotnet.Interfaces.Services;
 using ProjetDotnet.Data;
@@ -49,13 +48,14 @@ public class PropertyService : IPropertyService
             Price = dto.Price,
             Type = dto.Type,
             Transaction = dto.Transaction,
-            Status = PropertyStatus.Available,
+            Status = dto.Status,
             Address = dto.Address,
             City = dto.City,
             Area = dto.Area,
             Bedrooms = dto.Bedrooms,
             Bathrooms = dto.Bathrooms,
             YearBuilt = dto.YearBuilt,
+            IsFeatured = dto.IsFeatured,
             Owner = user,
             CreatedAt = DateTime.UtcNow,
             Images = new List<PropertyImage>()
