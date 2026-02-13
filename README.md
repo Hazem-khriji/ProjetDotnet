@@ -10,6 +10,9 @@ This project follows a modern full-stack architecture:
 - **Frontend**: React 19.2 with Vite, TailwindCSS, and Radix UI
 - **Database**: SQL Server (configurable for MySQL)
 - **Authentication**: ASP.NET Core Identity with Cookie-based authentication
+## 🏗️ Overview
+<img width="1917" height="874" alt="Screenshot 2026-02-13 155447" src="https://github.com/user-attachments/assets/82f46c17-238a-49e1-bf57-49291492d2f2" />
+<img width="1919" height="913" alt="Screenshot 2026-02-13 155524" src="https://github.com/user-attachments/assets/4a5b7982-30a6-4691-a491-d8617117a480" />
 
 ## ✨ Features
 
@@ -402,55 +405,6 @@ Create `appsettings.Development.json` for local development:
   }
 }
 ```
-
-## 🐛 Troubleshooting
-
-### Database Connection Issues
-- Ensure SQL Server/MySQL is running
-- Verify connection string in `appsettings.json`
-- Check firewall settings
-
-### Migration Issues
-```bash
-dotnet ef database drop --force
-dotnet ef database update
-```
-
-### CORS Issues
-- Verify frontend URL in CORS policy (Program.cs)
-- Check browser console for detailed error messages
-
-### Port Conflicts
-- Backend default: 5000/5001
-- Frontend default: 5173
-- Change in `Properties/launchSettings.json` and `vite.config.js`
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
-
-## 📄 License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
-
-## 👨‍💻 Authors
-
-- Your Name - Initial work
-
-## 🙏 Acknowledgments
-
-- ASP.NET Core team for the excellent framework
-- React team for the amazing UI library
-- Radix UI for accessible components
-- TailwindCSS for the utility-first CSS framework
-
-## 📧 Support
-
-For support, email your-email@example.com or open an issue in the repository.
 
 ---
 
