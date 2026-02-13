@@ -189,9 +189,6 @@ export const propertyService = {
         price?: number;
         address?: string;
         city?: string;
-        state?: string;
-        zipCode?: string;
-        country?: string;
         bedrooms?: number;
         bathrooms?: number;
         area?: number;
@@ -246,6 +243,27 @@ export const propertyService = {
         }
         
         return true;
+    },
+
+    getMyProperties: async (params?: {
+        pageNumber?: number;
+        pageSize?: number;
+    }) => {
+        const queryParams = new URLSearchParams();
+        
+        if (params) {
+            if (params.pageNumber) queryParams.append('pageNumber', params.pageNumber.toString());
+            if (params.pageSize) queryParams.append('pageSize', params.pageSize.toString());
+        }
+        
+        const url = `${API_ENDPOINTS.PROPERTIES.API}/my-properties?${queryParams.toString()}`;
+        const response = await fetch(url, getFetchOptions());
+        
+        if (!response.ok) {
+            throw new Error('Failed to fetch my properties');
+        }
+        
+        return response.json();
     },
 };
 

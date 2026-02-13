@@ -1,4 +1,4 @@
-﻿﻿namespace ProjetDotnet.Interfaces.Services;
+﻿﻿﻿﻿namespace ProjetDotnet.Interfaces.Services;
 using ProjetDotnet.DTOs;
 using ProjetDotnet.Enums;
 using ProjetDotnet.Models;
@@ -13,4 +13,5 @@ public interface IPropertyService
     Task<bool> UpdateStatusAsync(int id, PropertyStatus status);
     Task<int> GetTotalCountAsync();
     Task<List<PropertyDto>> GetFeaturedPropertiesAsync(int count = 10);
+    Task<List<PropertyDto>> GetByOwnerAsync(string ownerId);
 }

@@ -5,6 +5,7 @@ import Signin from "./pages/Signin";
 import Properties from "./pages/Properties";
 import PropertyDetails from "./pages/PropertyDetails";
 import AgentInquiries from "./pages/AgentInquiries";
+import AgentProperties from "./pages/AgentProperties";
 import AdminLayout from "./pages/AdminLayout";
 import AdminStatistics from "./pages/AdminStatistics";
 import AdminProperties from "./pages/AdminProperties";
@@ -20,9 +21,11 @@ function App() {
             <Route path="/properties" element={<Properties />} />
             <Route path="/property/:id" element={<PropertyDetails />} />
             <Route path="/agent/inquiries" element={<AgentInquiries />} />
+            <Route path="/agent/properties" element={<AgentProperties />} />
             
             {/* Admin Routes */}
             <Route path="/admin" element={<AdminLayout />}>
+                <Route index element={<AdminStatistics />} />
                 <Route path="statistics" element={<AdminStatistics />} />
                 <Route path="properties" element={<AdminProperties />} />
                 <Route path="users" element={<AdminUsers />} />

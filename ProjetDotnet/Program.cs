@@ -130,8 +130,7 @@ var app = builder.Build();
                         await userManager.AddToRoleAsync(adminUser, "Admin");
                     }
                 }
-
-                // Seed sample data
+                
                 await DatabaseSeeder.SeedAsync(context, userManager);
             }
             catch (Exception ex)

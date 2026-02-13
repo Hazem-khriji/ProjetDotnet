@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using ProjetDotnet.DTOs;
@@ -50,6 +50,18 @@ public class PropertiesApiController : ControllerBase
         return Ok(result);
     }
 
+    [HttpGet("my-properties")]  
+    [Authorize(Roles = "Admin,Agent")]
+    public async Task<ActionResult<List<PropertyDto>>> GetMyProperties()
+    {
+        var user = await _userManager.GetUserAsync(User);
+        if (user == null)
+            return Unauthorized();
+
+        var result = await _propertyService.GetByOwnerAsync(user.Id);
+        return Ok(result);
+    }
+
     [HttpGet("{id}")]
     public async Task<ActionResult<PropertyDto>> GetProperty(int id)
     {
@@ -89,8 +101,24 @@ public class PropertiesApiController : ControllerBase
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
 
+        var user = await _userManager.GetUserAsync(User);
+        if (user == null)
+            return Unauthorized();
+
         try
         {
+            // Get the property to check ownership
+            var existingProperty = await _propertyService.GetByIdAsync(id);
+            if (existingProperty == null)
+                return NotFound();
+
+            // Allow if user is Admin or if Agent owns the property
+            var isAdmin = User.IsInRole("Admin");
+            var isOwner = existingProperty.Owner?.Id == user.Id;
+
+            if (!isAdmin && !isOwner)
+                return Forbid();
+
             var property = await _propertyService.UpdateAsync(id, dto);
             return Ok(property);
         }
@@ -101,9 +129,25 @@ public class PropertiesApiController : ControllerBase
     }
 
     [HttpDelete("{id}")]
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "Admin,Agent")]
     public async Task<IActionResult> DeleteProperty(int id)
     {
+        var user = await _userManager.GetUserAsync(User);
+        if (user == null)
+            return Unauthorized();
+
+        // Get the property to check ownership
+        var property = await _propertyService.GetByIdAsync(id);
+        if (property == null)
+            return NotFound();
+
+        // Allow if user is Admin or if Agent owns the property
+        var isAdmin = User.IsInRole("Admin");
+        var isOwner = property.Owner?.Id == user.Id;
+
+        if (!isAdmin && !isOwner)
+            return Forbid();
+
         var result = await _propertyService.DeleteAsync(id);
         if (!result)
             return NotFound();

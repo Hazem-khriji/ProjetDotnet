@@ -1,4 +1,4 @@
-﻿﻿namespace ProjetDotnet.DTOs;
+﻿﻿﻿namespace ProjetDotnet.DTOs;
 using ProjetDotnet.Enums;
 using System.ComponentModel.DataAnnotations;
 
@@ -31,15 +31,6 @@ public class UpdatePropertyDto
         
     [MaxLength(100)]
     public string? City { get; set; }
-    
-    [MaxLength(100)]
-    public string? State { get; set; }
-    
-    [MaxLength(20)]
-    public string? ZipCode { get; set; }
-    
-    [MaxLength(100)]
-    public string? Country { get; set; }
         
     [Required]
     [Range(1, 10000)]

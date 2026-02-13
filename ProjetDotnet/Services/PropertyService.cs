@@ -174,6 +174,12 @@ public class PropertyService : IPropertyService
         return properties.Select(MapToDto).ToList();
     }
 
+    public async Task<List<PropertyDto>> GetByOwnerAsync(string ownerId)
+    {
+        var properties = await _propertyRepository.GetByUserIdAsync(ownerId);
+        return properties.Select(MapToDto).ToList();
+    }
+
     private PropertyDto MapToDto(Property property)
     {
         return new PropertyDto
