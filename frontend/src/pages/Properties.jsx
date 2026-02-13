@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+﻿﻿import React, { useState, useEffect, useCallback } from 'react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import AddPropertyModal from '../components/AddPropertyModal';
@@ -20,7 +20,7 @@ const Properties = () => {
   const [error, setError] = useState(null);
   const [pagination, setPagination] = useState({
     pageNumber: 1,
-    pageSize: 12,
+    pageSize: 4,
     totalCount: 0,
     totalPages: 0,
   });
@@ -41,7 +41,7 @@ const Properties = () => {
   
   const [propertyImages, setPropertyImages] = useState([]);
   
-  const fetchProperties = async () => {
+  const fetchProperties = useCallback(async () => {
     setLoading(true);
     setError(null);
     
@@ -97,15 +97,14 @@ const Properties = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [pagination.pageNumber, pagination.pageSize, searchTerm, propertyType, transactionType, minPrice, maxPrice]);
   
   useEffect(() => {
     fetchProperties();
-  }, [pagination.pageNumber]); 
+  }, [fetchProperties]); 
 
   const handleSearch = () => {
     setPagination(prev => ({ ...prev, pageNumber: 1 }));
-    fetchProperties();
   };
 
   const handlePageChange = (page) => {

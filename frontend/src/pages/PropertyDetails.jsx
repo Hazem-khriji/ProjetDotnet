@@ -1,6 +1,6 @@
 ﻿﻿import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { MapPin, Ruler, Eye, Calendar, Building2, Phone, Mail, Send } from 'lucide-react';
+import { MapPin, Ruler, Eye, Calendar, Building2, Phone, Mail, Send, Bed, Bath, Home, MapPinned, Globe } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -214,7 +214,7 @@ const PropertyDetails = () => {
             </div>
 
             {/* Property Stats */}
-            <div className="grid grid-cols-3 gap-4 mb-8">
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-8">
               <Card className="bg-white border border-gray-200 shadow-lg">
                 <CardContent className="p-6">
                   <div className="flex items-center gap-3">
@@ -229,19 +229,54 @@ const PropertyDetails = () => {
                 </CardContent>
               </Card>
 
-              <Card className="bg-white border border-gray-200 shadow-lg">
-                <CardContent className="p-6">
-                  <div className="flex items-center gap-3">
-                    <div className="p-3 bg-blue-100 rounded-lg">
-                      <Eye className="w-6 h-6 text-blue-600" />
+              {property.bedrooms != null && (
+                <Card className="bg-white border border-gray-200 shadow-lg">
+                  <CardContent className="p-6">
+                    <div className="flex items-center gap-3">
+                      <div className="p-3 bg-purple-100 rounded-lg">
+                        <Bed className="w-6 h-6 text-purple-600" />
+                      </div>
+                      <div>
+                        <p className="text-sm text-gray-500">Bedrooms</p>
+                        <p className="text-lg font-semibold text-gray-800">{property.bedrooms}</p>
+                      </div>
                     </div>
-                    <div>
-                      <p className="text-sm text-gray-500">Views</p>
-                      <p className="text-lg font-semibold text-gray-800">{property.views || 0}</p>
+                  </CardContent>
+                </Card>
+              )}
+
+              {property.bathrooms != null && (
+                <Card className="bg-white border border-gray-200 shadow-lg">
+                  <CardContent className="p-6">
+                    <div className="flex items-center gap-3">
+                      <div className="p-3 bg-teal-100 rounded-lg">
+                        <Bath className="w-6 h-6 text-teal-600" />
+                      </div>
+                      <div>
+                        <p className="text-sm text-gray-500">Bathrooms</p>
+                        <p className="text-lg font-semibold text-gray-800">{property.bathrooms}</p>
+                      </div>
                     </div>
-                  </div>
-                </CardContent>
-              </Card>
+                  </CardContent>
+                </Card>
+              )}
+
+              {property.yearBuilt && (
+                <Card className="bg-white border border-gray-200 shadow-lg">
+                  <CardContent className="p-6">
+                    <div className="flex items-center gap-3">
+                      <div className="p-3 bg-orange-100 rounded-lg">
+                        <Home className="w-6 h-6 text-orange-600" />
+                      </div>
+                      <div>
+                        <p className="text-sm text-gray-500">Year Built</p>
+                        <p className="text-lg font-semibold text-gray-800">{property.yearBuilt}</p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+
 
               <Card className="bg-white border border-gray-200 shadow-lg">
                 <CardContent className="p-6">
@@ -266,8 +301,7 @@ const PropertyDetails = () => {
               </p>
             </div>
           </div>
-
-          {/* Right Column - Contact Form */}
+          
           <div className="lg:col-span-1">
             <Card className="bg-white border border-gray-200 shadow-lg sticky top-24">
               <CardContent className="p-6">

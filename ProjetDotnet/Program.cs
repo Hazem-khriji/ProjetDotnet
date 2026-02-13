@@ -124,7 +124,7 @@ var app = builder.Build();
                         EmailConfirmed = true,
                         IsActive = true
                     };
-                    var result = await userManager.CreateAsync(adminUser, "Admin123!");
+                        var result = await userManager.CreateAsync(adminUser, "Admin123!");
                     if (result.Succeeded)
                     {
                         await userManager.AddToRoleAsync(adminUser, "Admin");
